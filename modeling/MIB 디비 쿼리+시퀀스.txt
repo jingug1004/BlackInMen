@@ -1,0 +1,1306 @@
+-- 상품
+CREATE TABLE "PRODUCT" (
+   "PRO_SEQ"     NUMBER         NOT NULL, -- 상품번호
+   "PRO_DETAIL"  VARCHAR2(4000) NOT NULL, -- 상품상세내용
+   "PRO_NAME"    VARCHAR2(100)  NOT NULL, -- 상품이름
+   "ITEM"        VARCHAR2(50)   NOT NULL, -- 카테고리
+   "SUB_ITEM"    VARCHAR2(50)   NULL,     -- 서브카테고리
+   "PRO_PRICE"   NUMBER         NOT NULL, -- 가격
+   "MATERIAL"    VARCHAR2(50)   NOT NULL, -- 소재
+   "WASH"        VARCHAR2(50)   NOT NULL, -- 세탁방법
+   "BODYTYPE"    VARCHAR2(50)   NULL,     -- 모델체형
+   "PRO_CONTENT" VARCHAR2(300)  NOT NULL, -- 상품설명
+   "NEW_ITEM"    VARCHAR2(50)   NULL      -- 신상품
+);
+
+-- 상품 기본키
+CREATE UNIQUE INDEX "PK_PRODUCT"
+   ON "PRODUCT" ( -- 상품
+      "PRO_SEQ" ASC -- 상품번호
+   );
+
+-- 상품
+ALTER TABLE "PRODUCT"
+   ADD
+      CONSTRAINT "PK_PRODUCT" -- 상품 기본키
+      PRIMARY KEY (
+         "PRO_SEQ" -- 상품번호
+      );
+
+-- 상품
+COMMENT ON TABLE "PRODUCT" IS '상품';
+
+-- 상품번호
+COMMENT ON COLUMN "PRODUCT"."PRO_SEQ" IS '상품번호';
+
+-- 상품상세내용
+COMMENT ON COLUMN "PRODUCT"."PRO_DETAIL" IS '상품상세내용';
+
+-- 상품이름
+COMMENT ON COLUMN "PRODUCT"."PRO_NAME" IS '상품이름';
+
+-- 카테고리
+COMMENT ON COLUMN "PRODUCT"."ITEM" IS '카테고리';
+
+-- 서브카테고리
+COMMENT ON COLUMN "PRODUCT"."SUB_ITEM" IS '서브카테고리';
+
+-- 가격
+COMMENT ON COLUMN "PRODUCT"."PRO_PRICE" IS '가격';
+
+-- 소재
+COMMENT ON COLUMN "PRODUCT"."MATERIAL" IS '소재';
+
+-- 세탁방법
+COMMENT ON COLUMN "PRODUCT"."WASH" IS '세탁방법';
+
+-- 모델체형
+COMMENT ON COLUMN "PRODUCT"."BODYTYPE" IS '모델체형';
+
+-- 상품설명
+COMMENT ON COLUMN "PRODUCT"."PRO_CONTENT" IS '상품설명';
+
+-- 신상품
+COMMENT ON COLUMN "PRODUCT"."NEW_ITEM" IS '신상품';
+
+-- 상품 기본키
+COMMENT ON INDEX "PK_PRODUCT" IS '상품 기본키';
+
+-- 상품 기본키
+COMMENT ON CONSTRAINT "PRODUCT"."PK_PRODUCT" IS '상품 기본키';
+
+-- 유저
+CREATE TABLE "MEMBERS" (
+   "USER_ID"       VARCHAR2(100) NOT NULL, -- ID
+   "USER_PW"       VARCHAR2(100) NOT NULL, -- PW
+   "USER_NAME"     VARCHAR2(100) NOT NULL, -- 이름
+   "TEL"           VARCHAR2(50)  NOT NULL, -- 전화번호
+   "ADDRESS"       VARCHAR2(300) NOT NULL, -- 주소
+   "POSTCODE"      VARCHAR2(100) NOT NULL, -- 우편번호
+   "SEX"           VARCHAR2(10)  NOT NULL, -- 성별
+   "BIRTH"         VARCHAR2(12)  NOT NULL, -- 생년월일
+   "EMAIL"         VARCHAR2(100) NOT NULL, -- 이메일
+   "DETAILADDRESS" VARCHAR2(300) NOT NULL  -- 상세주소
+);
+
+-- 유저 기본키
+CREATE UNIQUE INDEX "PK_MEMBERS"
+   ON "MEMBERS" ( -- 유저
+      "USER_ID" ASC -- ID
+   );
+
+-- 유저 유니크 인덱스
+CREATE UNIQUE INDEX "UIX_MEMBERS"
+   ON "MEMBERS" ( -- 유저
+      "EMAIL" ASC -- 이메일
+   );
+
+-- 유저
+ALTER TABLE "MEMBERS"
+   ADD
+      CONSTRAINT "PK_MEMBERS" -- 유저 기본키
+      PRIMARY KEY (
+         "USER_ID" -- ID
+      );
+
+-- 유저
+ALTER TABLE "MEMBERS"
+   ADD
+      CONSTRAINT "UK_MEMBERS" -- 유저 유니크 제약
+      UNIQUE (
+         "EMAIL" -- 이메일
+      );
+
+-- 유저
+COMMENT ON TABLE "MEMBERS" IS '유저';
+
+-- ID
+COMMENT ON COLUMN "MEMBERS"."USER_ID" IS 'ID';
+
+-- PW
+COMMENT ON COLUMN "MEMBERS"."USER_PW" IS 'PW';
+
+-- 이름
+COMMENT ON COLUMN "MEMBERS"."USER_NAME" IS '이름';
+
+-- 전화번호
+COMMENT ON COLUMN "MEMBERS"."TEL" IS '전화번호';
+
+-- 주소
+COMMENT ON COLUMN "MEMBERS"."ADDRESS" IS '주소';
+
+-- 우편번호
+COMMENT ON COLUMN "MEMBERS"."POSTCODE" IS '우편번호';
+
+-- 성별
+COMMENT ON COLUMN "MEMBERS"."SEX" IS '성별';
+
+-- 생년월일
+COMMENT ON COLUMN "MEMBERS"."BIRTH" IS '생년월일';
+
+-- 이메일
+COMMENT ON COLUMN "MEMBERS"."EMAIL" IS '이메일';
+
+-- 상세주소
+COMMENT ON COLUMN "MEMBERS"."DETAILADDRESS" IS '상세주소';
+
+-- 유저 기본키
+COMMENT ON INDEX "PK_MEMBERS" IS '유저 기본키';
+
+-- 유저 유니크 인덱스
+COMMENT ON INDEX "UIX_MEMBERS" IS '유저 유니크 인덱스';
+
+-- 유저 기본키
+COMMENT ON CONSTRAINT "MEMBERS"."PK_MEMBERS" IS '유저 기본키';
+
+-- 유저 유니크 제약
+COMMENT ON CONSTRAINT "MEMBERS"."UK_MEMBERS" IS '유저 유니크 제약';
+
+-- 쿠폰
+CREATE TABLE "COUPON" (
+   "COUP_SEQ"   NUMBER        NOT NULL, -- 쿠폰번호
+   "COUP_NAME"  VARCHAR2(100) NOT NULL, -- 쿠폰이름
+   "COUP_PRICE" NUMBER        NOT NULL, -- 할인가격
+   "CONDITION"  NUMBER        NULL,     -- 사용조건
+   "COUP_TIME"  VARCHAR2(12)  NOT NULL, -- 지급일
+   "COUP_LIMIT" VARCHAR2(12)  NULL,     -- 유효기간
+   "COUP_USE"   VARCHAR2(50)  NOT NULL, -- 사용여부
+   "USER_ID"    VARCHAR2(100) NOT NULL, -- ID
+   "COUP_RECV"  VARCHAR2(100) NOT NULL  -- 사유
+);
+
+-- 쿠폰 기본키
+CREATE UNIQUE INDEX "PK_COUPON"
+   ON "COUPON" ( -- 쿠폰
+      "COUP_SEQ" ASC -- 쿠폰번호
+   );
+
+-- 쿠폰
+ALTER TABLE "COUPON"
+   ADD
+      CONSTRAINT "PK_COUPON" -- 쿠폰 기본키
+      PRIMARY KEY (
+         "COUP_SEQ" -- 쿠폰번호
+      );
+
+-- 쿠폰
+COMMENT ON TABLE "COUPON" IS '쿠폰';
+
+-- 쿠폰번호
+COMMENT ON COLUMN "COUPON"."COUP_SEQ" IS '쿠폰번호';
+
+-- 쿠폰이름
+COMMENT ON COLUMN "COUPON"."COUP_NAME" IS '쿠폰이름';
+
+-- 할인가격
+COMMENT ON COLUMN "COUPON"."COUP_PRICE" IS '할인가격';
+
+-- 사용조건
+COMMENT ON COLUMN "COUPON"."CONDITION" IS '사용조건';
+
+-- 지급일
+COMMENT ON COLUMN "COUPON"."COUP_TIME" IS '지급일';
+
+-- 유효기간
+COMMENT ON COLUMN "COUPON"."COUP_LIMIT" IS '유효기간';
+
+-- 사용여부
+COMMENT ON COLUMN "COUPON"."COUP_USE" IS '사용여부';
+
+-- ID
+COMMENT ON COLUMN "COUPON"."USER_ID" IS 'ID';
+
+-- 사유
+COMMENT ON COLUMN "COUPON"."COUP_RECV" IS '사유';
+
+-- 쿠폰 기본키
+COMMENT ON INDEX "PK_COUPON" IS '쿠폰 기본키';
+
+-- 쿠폰 기본키
+COMMENT ON CONSTRAINT "COUPON"."PK_COUPON" IS '쿠폰 기본키';
+
+-- 판매(구매)내역
+CREATE TABLE "SALES" (
+   "SEL_SEQ"   NUMBER        NOT NULL, -- 주문번호
+   "SEL_TIME"  VARCHAR2(12)  NOT NULL, -- 구매날짜
+   "PRO_SEQ"   NUMBER        NOT NULL, -- 상품번호
+   "USER_ID"   VARCHAR2(100) NOT NULL, -- ID
+   "DEL_SEQ"   NUMBER        NOT NULL, -- 배송번호
+   "SEL_SIZE"  VARCHAR2(50)  NULL,     -- 사이즈
+   "SEL_COLOR" VARCHAR2(50)  NULL,     -- 컬러
+   "SEL_NUM"   NUMBER        NOT NULL, -- 구매수량
+   "CANCLE"    VARCHAR2(50)  NULL      -- 취소내역
+);
+
+-- 판매(구매)내역 기본키
+CREATE UNIQUE INDEX "PK_SALES"
+   ON "SALES" ( -- 판매(구매)내역
+      "SEL_SEQ" ASC -- 주문번호
+   );
+
+-- 판매(구매)내역
+ALTER TABLE "SALES"
+   ADD
+      CONSTRAINT "PK_SALES" -- 판매(구매)내역 기본키
+      PRIMARY KEY (
+         "SEL_SEQ" -- 주문번호
+      );
+
+-- 판매(구매)내역
+COMMENT ON TABLE "SALES" IS '판매(구매)내역';
+
+-- 주문번호
+COMMENT ON COLUMN "SALES"."SEL_SEQ" IS '주문번호';
+
+-- 구매날짜
+COMMENT ON COLUMN "SALES"."SEL_TIME" IS '구매날짜';
+
+-- 상품번호
+COMMENT ON COLUMN "SALES"."PRO_SEQ" IS '상품번호';
+
+-- ID
+COMMENT ON COLUMN "SALES"."USER_ID" IS 'ID';
+
+-- 배송번호
+COMMENT ON COLUMN "SALES"."DEL_SEQ" IS '배송번호';
+
+-- 사이즈
+COMMENT ON COLUMN "SALES"."SEL_SIZE" IS '사이즈';
+
+-- 컬러
+COMMENT ON COLUMN "SALES"."SEL_COLOR" IS '컬러';
+
+-- 구매수량
+COMMENT ON COLUMN "SALES"."SEL_NUM" IS '구매수량';
+
+-- 취소내역
+COMMENT ON COLUMN "SALES"."CANCLE" IS '취소내역';
+
+-- 판매(구매)내역 기본키
+COMMENT ON INDEX "PK_SALES" IS '판매(구매)내역 기본키';
+
+-- 판매(구매)내역 기본키
+COMMENT ON CONSTRAINT "SALES"."PK_SALES" IS '판매(구매)내역 기본키';
+
+-- 상품정보
+CREATE TABLE "PRO_DETAIL" (
+   "DET_SEQ"  NUMBER        NOT NULL, -- 시퀀스
+   "PRO_SEQ"  NUMBER        NOT NULL, -- 상품번호
+   "PRO_SIZE" VARCHAR2(300) NOT NULL, -- 사이즈
+   "COLOR"    VARCHAR2(300) NOT NULL, -- 색상
+   "STOCK"    NUMBER        NOT NULL  -- 재고
+);
+
+-- 상품정보 기본키
+CREATE UNIQUE INDEX "PK_PRO_DETAIL"
+   ON "PRO_DETAIL" ( -- 상품정보
+      "DET_SEQ" ASC -- 시퀀스
+   );
+
+-- 상품정보
+ALTER TABLE "PRO_DETAIL"
+   ADD
+      CONSTRAINT "PK_PRO_DETAIL" -- 상품정보 기본키
+      PRIMARY KEY (
+         "DET_SEQ" -- 시퀀스
+      );
+
+-- 상품정보
+COMMENT ON TABLE "PRO_DETAIL" IS '상품정보';
+
+-- 시퀀스
+COMMENT ON COLUMN "PRO_DETAIL"."DET_SEQ" IS '시퀀스';
+
+-- 상품번호
+COMMENT ON COLUMN "PRO_DETAIL"."PRO_SEQ" IS '상품번호';
+
+-- 사이즈
+COMMENT ON COLUMN "PRO_DETAIL"."PRO_SIZE" IS '사이즈';
+
+-- 색상
+COMMENT ON COLUMN "PRO_DETAIL"."COLOR" IS '색상';
+
+-- 재고
+COMMENT ON COLUMN "PRO_DETAIL"."STOCK" IS '재고';
+
+-- 상품정보 기본키
+COMMENT ON INDEX "PK_PRO_DETAIL" IS '상품정보 기본키';
+
+-- 상품정보 기본키
+COMMENT ON CONSTRAINT "PRO_DETAIL"."PK_PRO_DETAIL" IS '상품정보 기본키';
+
+-- 배송정보
+CREATE TABLE "DELIVERY" (
+   "DEL_SEQ"            NUMBER         NOT NULL, -- 배송번호
+   "DEL_ADDRESS"        VARCHAR2(100)  NOT NULL, -- 배송주소
+   "DEL_POSTCODE"       VARCHAR2(100)  NOT NULL, -- 우편번호
+   "DEL_NUMBER"         NUMBER         NOT NULL, -- 운송장번호
+   "DEL_CONTENT"        VARCHAR2(300)  NULL,     -- 주의사항
+   "REC_NAME"           VARCHAR2(100)  NOT NULL, -- 받는사람
+   "REC_TEL"            VARCHAR2(100)  NOT NULL, -- 전화번호
+   "DEL_TIME"           VARCHAR2(12)   NOT NULL, -- 배송일자
+   "DEL_PRICE"          NUMBER         NOT NULL, -- 택배운송비
+   "SEL_NUM"            NUMBER         NOT NULL, -- 구매수량
+   "DEL_STEP"           VARCHAR2(50)   NOT NULL, -- 배송상태
+   "PRO_SEQ"            NUMBER         NOT NULL, -- 상품번호
+   "POINT"              NUMBER         NULL,     -- 적립금사용액
+   "FINAL_PRICE"        NUMBER         NULL,     -- 최종결제액
+   "COUPON"             NUMBER         NULL,     -- 쿠폰사용액
+   "USER_ID"            VARCHAR2(100)  NOT NULL, -- ID
+   "RETURN"             VARCHAR2(100)  NULL,     -- 교환/환불/완료
+   "RE_OPTION"          VARCHAR2(1000) NULL,     -- 교환옵션
+   "RE_REASON"          VARCHAR2(4000) NULL,     -- 교환사유
+   "CA_ACCOUNT"         VARCHAR2(300)  NULL,     -- 환불계좌
+   "COUP_SEQ"           NUMBER         NULL,     -- 쿠폰번호
+   "DEL_DETAIL_ADDRESS" VARCHAR2(1000) NOT NULL  -- 상세주소
+);
+
+-- 배송정보 기본키
+CREATE UNIQUE INDEX "PK_DELIVERY"
+   ON "DELIVERY" ( -- 배송정보
+      "DEL_SEQ" ASC -- 배송번호
+   );
+
+-- 배송정보
+ALTER TABLE "DELIVERY"
+   ADD
+      CONSTRAINT "PK_DELIVERY" -- 배송정보 기본키
+      PRIMARY KEY (
+         "DEL_SEQ" -- 배송번호
+      );
+
+-- 배송정보
+COMMENT ON TABLE "DELIVERY" IS '배송정보';
+
+-- 배송번호
+COMMENT ON COLUMN "DELIVERY"."DEL_SEQ" IS '배송번호';
+
+-- 배송주소
+COMMENT ON COLUMN "DELIVERY"."DEL_ADDRESS" IS '배송주소';
+
+-- 우편번호
+COMMENT ON COLUMN "DELIVERY"."DEL_POSTCODE" IS '우편번호';
+
+-- 운송장번호
+COMMENT ON COLUMN "DELIVERY"."DEL_NUMBER" IS '운송장번호';
+
+-- 주의사항
+COMMENT ON COLUMN "DELIVERY"."DEL_CONTENT" IS '주의사항';
+
+-- 받는사람
+COMMENT ON COLUMN "DELIVERY"."REC_NAME" IS '받는사람';
+
+-- 전화번호
+COMMENT ON COLUMN "DELIVERY"."REC_TEL" IS '전화번호';
+
+-- 배송일자
+COMMENT ON COLUMN "DELIVERY"."DEL_TIME" IS '배송일자';
+
+-- 택배운송비
+COMMENT ON COLUMN "DELIVERY"."DEL_PRICE" IS '택배운송비';
+
+-- 구매수량
+COMMENT ON COLUMN "DELIVERY"."SEL_NUM" IS '구매수량';
+
+-- 배송상태
+COMMENT ON COLUMN "DELIVERY"."DEL_STEP" IS '배송상태';
+
+-- 상품번호
+COMMENT ON COLUMN "DELIVERY"."PRO_SEQ" IS '상품번호';
+
+-- 적립금사용액
+COMMENT ON COLUMN "DELIVERY"."POINT" IS '적립금사용액';
+
+-- 최종결제액
+COMMENT ON COLUMN "DELIVERY"."FINAL_PRICE" IS '최종결제액';
+
+-- 쿠폰사용액
+COMMENT ON COLUMN "DELIVERY"."COUPON" IS '쿠폰사용액';
+
+-- ID
+COMMENT ON COLUMN "DELIVERY"."USER_ID" IS 'ID';
+
+-- 교환/환불/완료
+COMMENT ON COLUMN "DELIVERY"."RETURN" IS '교환/환불/완료';
+
+-- 교환옵션
+COMMENT ON COLUMN "DELIVERY"."RE_OPTION" IS '교환옵션';
+
+-- 교환사유
+COMMENT ON COLUMN "DELIVERY"."RE_REASON" IS '교환사유';
+
+-- 환불계좌
+COMMENT ON COLUMN "DELIVERY"."CA_ACCOUNT" IS '환불계좌';
+
+-- 쿠폰번호
+COMMENT ON COLUMN "DELIVERY"."COUP_SEQ" IS '쿠폰번호';
+
+-- 상세주소
+COMMENT ON COLUMN "DELIVERY"."DEL_DETAIL_ADDRESS" IS '상세주소';
+
+-- 배송정보 기본키
+COMMENT ON INDEX "PK_DELIVERY" IS '배송정보 기본키';
+
+-- 배송정보 기본키
+COMMENT ON CONSTRAINT "DELIVERY"."PK_DELIVERY" IS '배송정보 기본키';
+
+-- 리뷰
+CREATE TABLE "REVIEW" (
+   "REV_SEQ"     NUMBER         NOT NULL, -- 리뷰번호
+   "REV_TITLE"   VARCHAR2(100)  NOT NULL, -- 제목
+   "REV_CONTENT" VARCHAR2(4000) NOT NULL, -- 내용
+   "REV_TIME"    VARCHAR2(12)   NOT NULL, -- 작성일
+   "SCORE"       NUMBER         NOT NULL, -- 평점
+   "REV_REF"     NUMBER         NOT NULL, -- 그룹
+   "USER_ID"     VARCHAR2(100)  NOT NULL, -- ID
+   "PRO_SEQ"     NUMBER         NOT NULL, -- 상품번호
+   "REV_STEP"    VARCHAR2(50)   NULL      -- 답변여부
+);
+
+-- 리뷰 기본키
+CREATE UNIQUE INDEX "PK_REVIEW"
+   ON "REVIEW" ( -- 리뷰
+      "REV_SEQ" ASC -- 리뷰번호
+   );
+
+-- 리뷰
+ALTER TABLE "REVIEW"
+   ADD
+      CONSTRAINT "PK_REVIEW" -- 리뷰 기본키
+      PRIMARY KEY (
+         "REV_SEQ" -- 리뷰번호
+      );
+
+-- 리뷰
+COMMENT ON TABLE "REVIEW" IS '리뷰';
+
+-- 리뷰번호
+COMMENT ON COLUMN "REVIEW"."REV_SEQ" IS '리뷰번호';
+
+-- 제목
+COMMENT ON COLUMN "REVIEW"."REV_TITLE" IS '제목';
+
+-- 내용
+COMMENT ON COLUMN "REVIEW"."REV_CONTENT" IS '내용';
+
+-- 작성일
+COMMENT ON COLUMN "REVIEW"."REV_TIME" IS '작성일';
+
+-- 평점
+COMMENT ON COLUMN "REVIEW"."SCORE" IS '평점';
+
+-- 그룹
+COMMENT ON COLUMN "REVIEW"."REV_REF" IS '그룹';
+
+-- ID
+COMMENT ON COLUMN "REVIEW"."USER_ID" IS 'ID';
+
+-- 상품번호
+COMMENT ON COLUMN "REVIEW"."PRO_SEQ" IS '상품번호';
+
+-- 답변여부
+COMMENT ON COLUMN "REVIEW"."REV_STEP" IS '답변여부';
+
+-- 리뷰 기본키
+COMMENT ON INDEX "PK_REVIEW" IS '리뷰 기본키';
+
+-- 리뷰 기본키
+COMMENT ON CONSTRAINT "REVIEW"."PK_REVIEW" IS '리뷰 기본키';
+
+-- 문의
+CREATE TABLE "QNA" (
+   "QNA_SEQ"     NUMBER         NOT NULL, -- 시퀀스
+   "QNA_TITLE"   VARCHAR2(100)  NOT NULL, -- 제목
+   "QNA_CONTENT" VARCHAR2(4000) NOT NULL, -- 내용
+   "QNA_TIME"    VARCHAR2(12)   NOT NULL, -- 작성일
+   "QNA_OPEN"    VARCHAR2(50)   NOT NULL, -- 공개여부
+   "QNA_REF"     NUMBER         NOT NULL, -- 그룹
+   "QNA_TYPE"    VARCHAR2(50)   NOT NULL, -- 문의구분
+   "QNA_STEP"    VARCHAR2(50)   NOT NULL, -- 답변여부
+   "USER_ID"     VARCHAR2(100)  NOT NULL, -- ID
+   "PRO_SEQ"     NUMBER         NOT NULL  -- 상품번호
+);
+
+-- 문의 기본키
+CREATE UNIQUE INDEX "PK_QNA"
+   ON "QNA" ( -- 문의
+      "QNA_SEQ" ASC -- 시퀀스
+   );
+
+-- 문의
+ALTER TABLE "QNA"
+   ADD
+      CONSTRAINT "PK_QNA" -- 문의 기본키
+      PRIMARY KEY (
+         "QNA_SEQ" -- 시퀀스
+      );
+
+-- 문의
+COMMENT ON TABLE "QNA" IS '문의';
+
+-- 시퀀스
+COMMENT ON COLUMN "QNA"."QNA_SEQ" IS '시퀀스';
+
+-- 제목
+COMMENT ON COLUMN "QNA"."QNA_TITLE" IS '제목';
+
+-- 내용
+COMMENT ON COLUMN "QNA"."QNA_CONTENT" IS '내용';
+
+-- 작성일
+COMMENT ON COLUMN "QNA"."QNA_TIME" IS '작성일';
+
+-- 공개여부
+COMMENT ON COLUMN "QNA"."QNA_OPEN" IS '공개여부';
+
+-- 그룹
+COMMENT ON COLUMN "QNA"."QNA_REF" IS '그룹';
+
+-- 문의구분
+COMMENT ON COLUMN "QNA"."QNA_TYPE" IS '문의구분';
+
+-- 답변여부
+COMMENT ON COLUMN "QNA"."QNA_STEP" IS '답변여부';
+
+-- ID
+COMMENT ON COLUMN "QNA"."USER_ID" IS 'ID';
+
+-- 상품번호
+COMMENT ON COLUMN "QNA"."PRO_SEQ" IS '상품번호';
+
+-- 문의 기본키
+COMMENT ON INDEX "PK_QNA" IS '문의 기본키';
+
+-- 문의 기본키
+COMMENT ON CONSTRAINT "QNA"."PK_QNA" IS '문의 기본키';
+
+-- 사진
+CREATE TABLE "PHOTO" (
+   "PHOTO_SEQ"     NUMBER        NOT NULL, -- 시퀀스
+   "STORED_NAME"   VARCHAR2(300) NULL,     -- 저장된이름
+   "ORIGINAL_NAME" VARCHAR2(300) NULL,     -- 원본사진이름
+   "PRO_SEQ"       NUMBER        NULL,     -- 상품번호
+   "EVENT_SEQ"     NUMBER        NULL,     -- 이벤트번호
+   "REV_SEQ"       NUMBER        NULL,     -- 리뷰번호
+   "BAN_SEQ"       NUMBER        NULL,     -- 배너번호
+   "COUP_SEQ"      NUMBER        NULL      -- 쿠폰번호
+);
+
+-- 사진 기본키
+CREATE UNIQUE INDEX "PK_PHOTO"
+   ON "PHOTO" ( -- 사진
+      "PHOTO_SEQ" ASC -- 시퀀스
+   );
+
+-- 사진
+ALTER TABLE "PHOTO"
+   ADD
+      CONSTRAINT "PK_PHOTO" -- 사진 기본키
+      PRIMARY KEY (
+         "PHOTO_SEQ" -- 시퀀스
+      );
+
+-- 사진
+COMMENT ON TABLE "PHOTO" IS '사진';
+
+-- 시퀀스
+COMMENT ON COLUMN "PHOTO"."PHOTO_SEQ" IS '시퀀스';
+
+-- 저장된이름
+COMMENT ON COLUMN "PHOTO"."STORED_NAME" IS '저장된이름';
+
+-- 원본사진이름
+COMMENT ON COLUMN "PHOTO"."ORIGINAL_NAME" IS '원본사진이름';
+
+-- 상품번호
+COMMENT ON COLUMN "PHOTO"."PRO_SEQ" IS '상품번호';
+
+-- 이벤트번호
+COMMENT ON COLUMN "PHOTO"."EVENT_SEQ" IS '이벤트번호';
+
+-- 리뷰번호
+COMMENT ON COLUMN "PHOTO"."REV_SEQ" IS '리뷰번호';
+
+-- 배너번호
+COMMENT ON COLUMN "PHOTO"."BAN_SEQ" IS '배너번호';
+
+-- 쿠폰번호
+COMMENT ON COLUMN "PHOTO"."COUP_SEQ" IS '쿠폰번호';
+
+-- 사진 기본키
+COMMENT ON INDEX "PK_PHOTO" IS '사진 기본키';
+
+-- 사진 기본키
+COMMENT ON CONSTRAINT "PHOTO"."PK_PHOTO" IS '사진 기본키';
+
+-- 적립금
+CREATE TABLE "POINTS" (
+   "POINT_SEQ"    NUMBER        NOT NULL, -- 시퀀스
+   "POINT_TIME"   VARCHAR2(12)  NOT NULL, -- 날짜
+   "POINT_PRICE"  NUMBER        NOT NULL, -- 금액
+   "POINT_FINAL"  NUMBER        NOT NULL, -- 최종금액
+   "INCREASE"     VARCHAR2(50)  NOT NULL, -- 증감여부
+   "USER_ID"      VARCHAR2(100) NOT NULL, -- ID
+   "PRO_SEQ"      NUMBER        NOT NULL, -- 상품번호
+   "DEL_SEQ"      NUMBER        NULL,     -- 배송번호
+   "POINT_REASON" VARCHAR2(300) NULL      -- 사유
+);
+
+-- 적립금 기본키
+CREATE UNIQUE INDEX "PK_POINTS"
+   ON "POINTS" ( -- 적립금
+      "POINT_SEQ" ASC -- 시퀀스
+   );
+
+-- 적립금
+ALTER TABLE "POINTS"
+   ADD
+      CONSTRAINT "PK_POINTS" -- 적립금 기본키
+      PRIMARY KEY (
+         "POINT_SEQ" -- 시퀀스
+      );
+
+-- 적립금
+COMMENT ON TABLE "POINTS" IS '적립금';
+
+-- 시퀀스
+COMMENT ON COLUMN "POINTS"."POINT_SEQ" IS '시퀀스';
+
+-- 날짜
+COMMENT ON COLUMN "POINTS"."POINT_TIME" IS '날짜';
+
+-- 금액
+COMMENT ON COLUMN "POINTS"."POINT_PRICE" IS '금액';
+
+-- 최종금액
+COMMENT ON COLUMN "POINTS"."POINT_FINAL" IS '최종금액';
+
+-- 증감여부
+COMMENT ON COLUMN "POINTS"."INCREASE" IS '증감여부';
+
+-- ID
+COMMENT ON COLUMN "POINTS"."USER_ID" IS 'ID';
+
+-- 상품번호
+COMMENT ON COLUMN "POINTS"."PRO_SEQ" IS '상품번호';
+
+-- 배송번호
+COMMENT ON COLUMN "POINTS"."DEL_SEQ" IS '배송번호';
+
+-- 사유
+COMMENT ON COLUMN "POINTS"."POINT_REASON" IS '사유';
+
+-- 적립금 기본키
+COMMENT ON INDEX "PK_POINTS" IS '적립금 기본키';
+
+-- 적립금 기본키
+COMMENT ON CONSTRAINT "POINTS"."PK_POINTS" IS '적립금 기본키';
+
+-- 공지게시판
+CREATE TABLE "NOTICE_BOARD" (
+   "NOTICE_SEQ"     NUMBER         NOT NULL, -- 시퀀스
+   "NOTICE_TITLE"   VARCHAR2(100)  NOT NULL, -- 제목
+   "NOTICE_CONTENT" VARCHAR2(4000) NOT NULL, -- 내용
+   "NOTICE_TIME"    VARCHAR2(12)   NOT NULL  -- 날짜
+);
+
+-- 공지게시판 기본키
+CREATE UNIQUE INDEX "PK_NOTICE_BOARD"
+   ON "NOTICE_BOARD" ( -- 공지게시판
+      "NOTICE_SEQ" ASC -- 시퀀스
+   );
+
+-- 공지게시판
+ALTER TABLE "NOTICE_BOARD"
+   ADD
+      CONSTRAINT "PK_NOTICE_BOARD" -- 공지게시판 기본키
+      PRIMARY KEY (
+         "NOTICE_SEQ" -- 시퀀스
+      );
+
+-- 공지게시판
+COMMENT ON TABLE "NOTICE_BOARD" IS '공지게시판';
+
+-- 시퀀스
+COMMENT ON COLUMN "NOTICE_BOARD"."NOTICE_SEQ" IS '시퀀스';
+
+-- 제목
+COMMENT ON COLUMN "NOTICE_BOARD"."NOTICE_TITLE" IS '제목';
+
+-- 내용
+COMMENT ON COLUMN "NOTICE_BOARD"."NOTICE_CONTENT" IS '내용';
+
+-- 날짜
+COMMENT ON COLUMN "NOTICE_BOARD"."NOTICE_TIME" IS '날짜';
+
+-- 공지게시판 기본키
+COMMENT ON INDEX "PK_NOTICE_BOARD" IS '공지게시판 기본키';
+
+-- 공지게시판 기본키
+COMMENT ON CONSTRAINT "NOTICE_BOARD"."PK_NOTICE_BOARD" IS '공지게시판 기본키';
+
+-- 이벤트게시판
+CREATE TABLE "EVENT_BOARD" (
+   "EVENT_SEQ"     NUMBER         NOT NULL, -- 이벤트번호
+   "EVENT_TITLE"   VARCHAR2(100)  NOT NULL, -- 제목
+   "EVENT_CONTENT" VARCHAR2(4000) NOT NULL, -- 내용
+   "EVENT_TIME"    VARCHAR2(12)   NOT NULL  -- 작성일
+);
+
+-- 이벤트게시판 기본키
+CREATE UNIQUE INDEX "PK_EVENT_BOARD"
+   ON "EVENT_BOARD" ( -- 이벤트게시판
+      "EVENT_SEQ" ASC -- 이벤트번호
+   );
+
+-- 이벤트게시판
+ALTER TABLE "EVENT_BOARD"
+   ADD
+      CONSTRAINT "PK_EVENT_BOARD" -- 이벤트게시판 기본키
+      PRIMARY KEY (
+         "EVENT_SEQ" -- 이벤트번호
+      );
+
+-- 이벤트게시판
+COMMENT ON TABLE "EVENT_BOARD" IS '이벤트게시판';
+
+-- 이벤트번호
+COMMENT ON COLUMN "EVENT_BOARD"."EVENT_SEQ" IS '이벤트번호';
+
+-- 제목
+COMMENT ON COLUMN "EVENT_BOARD"."EVENT_TITLE" IS '제목';
+
+-- 내용
+COMMENT ON COLUMN "EVENT_BOARD"."EVENT_CONTENT" IS '내용';
+
+-- 작성일
+COMMENT ON COLUMN "EVENT_BOARD"."EVENT_TIME" IS '작성일';
+
+-- 이벤트게시판 기본키
+COMMENT ON INDEX "PK_EVENT_BOARD" IS '이벤트게시판 기본키';
+
+-- 이벤트게시판 기본키
+COMMENT ON CONSTRAINT "EVENT_BOARD"."PK_EVENT_BOARD" IS '이벤트게시판 기본키';
+
+-- 장바구니
+CREATE TABLE "BASKET" (
+   "BAS_SEQ"     NUMBER        NOT NULL, -- 시퀀스
+   "PRO_SEQ"     NUMBER        NOT NULL, -- 상품번호
+   "USER_ID"     VARCHAR2(100) NOT NULL, -- ID
+   "PRO_SIZE"    VARCHAR2(50)  NULL,     -- 사이즈
+   "COLOR"       VARCHAR2(50)  NULL,     -- 컬러
+   "BAS_PRO_NUM" NUMBER        NOT NULL  -- 구매수량
+);
+
+-- 장바구니 기본키
+CREATE UNIQUE INDEX "PK_BASKET"
+   ON "BASKET" ( -- 장바구니
+      "BAS_SEQ" ASC -- 시퀀스
+   );
+
+-- 장바구니
+ALTER TABLE "BASKET"
+   ADD
+      CONSTRAINT "PK_BASKET" -- 장바구니 기본키
+      PRIMARY KEY (
+         "BAS_SEQ" -- 시퀀스
+      );
+
+-- 장바구니
+COMMENT ON TABLE "BASKET" IS '장바구니';
+
+-- 시퀀스
+COMMENT ON COLUMN "BASKET"."BAS_SEQ" IS '시퀀스';
+
+-- 상품번호
+COMMENT ON COLUMN "BASKET"."PRO_SEQ" IS '상품번호';
+
+-- ID
+COMMENT ON COLUMN "BASKET"."USER_ID" IS 'ID';
+
+-- 사이즈
+COMMENT ON COLUMN "BASKET"."PRO_SIZE" IS '사이즈';
+
+-- 컬러
+COMMENT ON COLUMN "BASKET"."COLOR" IS '컬러';
+
+-- 구매수량
+COMMENT ON COLUMN "BASKET"."BAS_PRO_NUM" IS '구매수량';
+
+-- 장바구니 기본키
+COMMENT ON INDEX "PK_BASKET" IS '장바구니 기본키';
+
+-- 장바구니 기본키
+COMMENT ON CONSTRAINT "BASKET"."PK_BASKET" IS '장바구니 기본키';
+
+-- 코드_M
+CREATE TABLE "CODE_M" (
+   "CD_ID"  NUMBER        NOT NULL, -- 코드ID
+   "CD_NM"  VARCHAR2(200) NOT NULL, -- 코드이름
+   "REG_ID" VARCHAR2(20)  NOT NULL, -- 작성자
+   "REG_DT" DATE          NULL,     -- 작성일
+   "MOD_ID" VARCHAR2(20)  NOT NULL, -- 수정자
+   "MOD_DT" DATE          NULL      -- 수정일
+);
+
+-- 코드_M 기본키
+CREATE UNIQUE INDEX "PK_CODE_M"
+   ON "CODE_M" ( -- 코드_M
+      "CD_ID" ASC -- 코드ID
+   );
+
+-- 코드_M
+ALTER TABLE "CODE_M"
+   ADD
+      CONSTRAINT "PK_CODE_M" -- 코드_M 기본키
+      PRIMARY KEY (
+         "CD_ID" -- 코드ID
+      );
+
+-- 코드_M
+COMMENT ON TABLE "CODE_M" IS '코드_M';
+
+-- 코드ID
+COMMENT ON COLUMN "CODE_M"."CD_ID" IS '코드ID';
+
+-- 코드이름
+COMMENT ON COLUMN "CODE_M"."CD_NM" IS '코드이름';
+
+-- 작성자
+COMMENT ON COLUMN "CODE_M"."REG_ID" IS '작성자';
+
+-- 작성일
+COMMENT ON COLUMN "CODE_M"."REG_DT" IS '작성일';
+
+-- 수정자
+COMMENT ON COLUMN "CODE_M"."MOD_ID" IS '수정자';
+
+-- 수정일
+COMMENT ON COLUMN "CODE_M"."MOD_DT" IS '수정일';
+
+-- 코드_M 기본키
+COMMENT ON INDEX "PK_CODE_M" IS '코드_M 기본키';
+
+-- 코드_M 기본키
+COMMENT ON CONSTRAINT "CODE_M"."PK_CODE_M" IS '코드_M 기본키';
+
+-- 코드_D
+CREATE TABLE "CODE_D" (
+   "CD_D_ID" VARCHAR2(100) NOT NULL, -- 코드상세ID
+   "CD_ID"   NUMBER        NOT NULL, -- 코드ID
+   "CD_D_NM" VARCHAR2(200) NOT NULL, -- 코드상세이름
+   "USE_YN"  CHAR(1)       NOT NULL, -- 사용여부
+   "REG_ID"  VARCHAR2(20)  NOT NULL, -- 등록자
+   "REG_DT"  DATE          NULL,     -- 등록일
+   "MOD_ID"  VARCHAR2(20)  NOT NULL, -- 수정자
+   "MOD_DT"  DATE          NULL      -- 수정일
+);
+
+-- 코드_D 기본키
+CREATE UNIQUE INDEX "PK_CODE_D"
+   ON "CODE_D" ( -- 코드_D
+      "CD_D_ID" ASC, -- 코드상세ID
+      "CD_ID"   ASC  -- 코드ID
+   );
+
+-- 코드_D
+ALTER TABLE "CODE_D"
+   ADD
+      CONSTRAINT "PK_CODE_D" -- 코드_D 기본키
+      PRIMARY KEY (
+         "CD_D_ID", -- 코드상세ID
+         "CD_ID"    -- 코드ID
+      );
+
+-- 코드_D
+COMMENT ON TABLE "CODE_D" IS '코드_D';
+
+-- 코드상세ID
+COMMENT ON COLUMN "CODE_D"."CD_D_ID" IS '코드상세ID';
+
+-- 코드ID
+COMMENT ON COLUMN "CODE_D"."CD_ID" IS '코드ID';
+
+-- 코드상세이름
+COMMENT ON COLUMN "CODE_D"."CD_D_NM" IS '코드상세이름';
+
+-- 사용여부
+COMMENT ON COLUMN "CODE_D"."USE_YN" IS '사용여부';
+
+-- 등록자
+COMMENT ON COLUMN "CODE_D"."REG_ID" IS '등록자';
+
+-- 등록일
+COMMENT ON COLUMN "CODE_D"."REG_DT" IS '등록일';
+
+-- 수정자
+COMMENT ON COLUMN "CODE_D"."MOD_ID" IS '수정자';
+
+-- 수정일
+COMMENT ON COLUMN "CODE_D"."MOD_DT" IS '수정일';
+
+-- 코드_D 기본키
+COMMENT ON INDEX "PK_CODE_D" IS '코드_D 기본키';
+
+-- 코드_D 기본키
+COMMENT ON CONSTRAINT "CODE_D"."PK_CODE_D" IS '코드_D 기본키';
+
+-- 메인베너
+CREATE TABLE "MAINBANNER" (
+   "BAN_SEQ"  NUMBER        NOT NULL, -- 배너번호
+   "PRO_SEQ"  NUMBER        NOT NULL, -- 상품번호
+   "BAN_TIME" VARCHAR2(300) NOT NULL  -- 작성시간
+);
+
+-- 메인베너 기본키
+CREATE UNIQUE INDEX "PK_MAINBANNER"
+   ON "MAINBANNER" ( -- 메인베너
+      "BAN_SEQ" ASC -- 배너번호
+   );
+
+-- 메인베너
+ALTER TABLE "MAINBANNER"
+   ADD
+      CONSTRAINT "PK_MAINBANNER" -- 메인베너 기본키
+      PRIMARY KEY (
+         "BAN_SEQ" -- 배너번호
+      );
+
+-- 메인베너
+COMMENT ON TABLE "MAINBANNER" IS '메인베너';
+
+-- 배너번호
+COMMENT ON COLUMN "MAINBANNER"."BAN_SEQ" IS '배너번호';
+
+-- 상품번호
+COMMENT ON COLUMN "MAINBANNER"."PRO_SEQ" IS '상품번호';
+
+-- 작성시간
+COMMENT ON COLUMN "MAINBANNER"."BAN_TIME" IS '작성시간';
+
+-- 메인베너 기본키
+COMMENT ON INDEX "PK_MAINBANNER" IS '메인베너 기본키';
+
+-- 메인베너 기본키
+COMMENT ON CONSTRAINT "MAINBANNER"."PK_MAINBANNER" IS '메인베너 기본키';
+
+-- 쿠폰
+ALTER TABLE "COUPON"
+   ADD
+      CONSTRAINT "FK_MEMBERS_TO_COUPON" -- 유저 -> 쿠폰
+      FOREIGN KEY (
+         "USER_ID" -- ID
+      )
+      REFERENCES "MEMBERS" ( -- 유저
+         "USER_ID" -- ID
+      );
+
+-- 유저 -> 쿠폰
+COMMENT ON CONSTRAINT "COUPON"."FK_MEMBERS_TO_COUPON" IS '유저 -> 쿠폰';
+
+-- 판매(구매)내역
+ALTER TABLE "SALES"
+   ADD
+      CONSTRAINT "FK_PRODUCT_TO_SALES" -- 상품 -> 판매(구매)내역
+      FOREIGN KEY (
+         "PRO_SEQ" -- 상품번호
+      )
+      REFERENCES "PRODUCT" ( -- 상품
+         "PRO_SEQ" -- 상품번호
+      );
+
+-- 상품 -> 판매(구매)내역
+COMMENT ON CONSTRAINT "SALES"."FK_PRODUCT_TO_SALES" IS '상품 -> 판매(구매)내역';
+
+-- 판매(구매)내역
+ALTER TABLE "SALES"
+   ADD
+      CONSTRAINT "FK_MEMBERS_TO_SALES" -- 유저 -> 판매(구매)내역
+      FOREIGN KEY (
+         "USER_ID" -- ID
+      )
+      REFERENCES "MEMBERS" ( -- 유저
+         "USER_ID" -- ID
+      );
+
+-- 유저 -> 판매(구매)내역
+COMMENT ON CONSTRAINT "SALES"."FK_MEMBERS_TO_SALES" IS '유저 -> 판매(구매)내역';
+
+-- 판매(구매)내역
+ALTER TABLE "SALES"
+   ADD
+      CONSTRAINT "FK_DELIVERY_TO_SALES" -- 배송정보 -> 판매(구매)내역
+      FOREIGN KEY (
+         "DEL_SEQ" -- 배송번호
+      )
+      REFERENCES "DELIVERY" ( -- 배송정보
+         "DEL_SEQ" -- 배송번호
+      );
+
+-- 배송정보 -> 판매(구매)내역
+COMMENT ON CONSTRAINT "SALES"."FK_DELIVERY_TO_SALES" IS '배송정보 -> 판매(구매)내역';
+
+-- 상품정보
+ALTER TABLE "PRO_DETAIL"
+   ADD
+      CONSTRAINT "FK_PRODUCT_TO_PRO_DETAIL" -- 상품 -> 상품정보
+      FOREIGN KEY (
+         "PRO_SEQ" -- 상품번호
+      )
+      REFERENCES "PRODUCT" ( -- 상품
+         "PRO_SEQ" -- 상품번호
+      );
+
+-- 상품 -> 상품정보
+COMMENT ON CONSTRAINT "PRO_DETAIL"."FK_PRODUCT_TO_PRO_DETAIL" IS '상품 -> 상품정보';
+
+-- 배송정보
+ALTER TABLE "DELIVERY"
+   ADD
+      CONSTRAINT "FK_PRODUCT_TO_DELIVERY" -- 상품 -> 배송정보
+      FOREIGN KEY (
+         "PRO_SEQ" -- 상품번호
+      )
+      REFERENCES "PRODUCT" ( -- 상품
+         "PRO_SEQ" -- 상품번호
+      );
+
+-- 상품 -> 배송정보
+COMMENT ON CONSTRAINT "DELIVERY"."FK_PRODUCT_TO_DELIVERY" IS '상품 -> 배송정보';
+
+-- 배송정보
+ALTER TABLE "DELIVERY"
+   ADD
+      CONSTRAINT "FK_MEMBERS_TO_DELIVERY" -- 유저 -> 배송정보
+      FOREIGN KEY (
+         "USER_ID" -- ID
+      )
+      REFERENCES "MEMBERS" ( -- 유저
+         "USER_ID" -- ID
+      );
+
+-- 유저 -> 배송정보
+COMMENT ON CONSTRAINT "DELIVERY"."FK_MEMBERS_TO_DELIVERY" IS '유저 -> 배송정보';
+
+-- 리뷰
+ALTER TABLE "REVIEW"
+   ADD
+      CONSTRAINT "FK_MEMBERS_TO_REVIEW" -- 유저 -> 리뷰
+      FOREIGN KEY (
+         "USER_ID" -- ID
+      )
+      REFERENCES "MEMBERS" ( -- 유저
+         "USER_ID" -- ID
+      );
+
+-- 유저 -> 리뷰
+COMMENT ON CONSTRAINT "REVIEW"."FK_MEMBERS_TO_REVIEW" IS '유저 -> 리뷰';
+
+-- 리뷰
+ALTER TABLE "REVIEW"
+   ADD
+      CONSTRAINT "FK_PRODUCT_TO_REVIEW" -- 상품 -> 리뷰
+      FOREIGN KEY (
+         "PRO_SEQ" -- 상품번호
+      )
+      REFERENCES "PRODUCT" ( -- 상품
+         "PRO_SEQ" -- 상품번호
+      );
+
+-- 상품 -> 리뷰
+COMMENT ON CONSTRAINT "REVIEW"."FK_PRODUCT_TO_REVIEW" IS '상품 -> 리뷰';
+
+-- 문의
+ALTER TABLE "QNA"
+   ADD
+      CONSTRAINT "FK_MEMBERS_TO_QNA" -- 유저 -> 문의
+      FOREIGN KEY (
+         "USER_ID" -- ID
+      )
+      REFERENCES "MEMBERS" ( -- 유저
+         "USER_ID" -- ID
+      );
+
+-- 유저 -> 문의
+COMMENT ON CONSTRAINT "QNA"."FK_MEMBERS_TO_QNA" IS '유저 -> 문의';
+
+-- 문의
+ALTER TABLE "QNA"
+   ADD
+      CONSTRAINT "FK_PRODUCT_TO_QNA" -- 상품 -> 문의
+      FOREIGN KEY (
+         "PRO_SEQ" -- 상품번호
+      )
+      REFERENCES "PRODUCT" ( -- 상품
+         "PRO_SEQ" -- 상품번호
+      );
+
+-- 상품 -> 문의
+COMMENT ON CONSTRAINT "QNA"."FK_PRODUCT_TO_QNA" IS '상품 -> 문의';
+
+-- 사진
+ALTER TABLE "PHOTO"
+   ADD
+      CONSTRAINT "FK_PRODUCT_TO_PHOTO" -- 상품 -> 사진
+      FOREIGN KEY (
+         "PRO_SEQ" -- 상품번호
+      )
+      REFERENCES "PRODUCT" ( -- 상품
+         "PRO_SEQ" -- 상품번호
+      );
+
+-- 상품 -> 사진
+COMMENT ON CONSTRAINT "PHOTO"."FK_PRODUCT_TO_PHOTO" IS '상품 -> 사진';
+
+-- 사진
+ALTER TABLE "PHOTO"
+   ADD
+      CONSTRAINT "FK_EVENT_BOARD_TO_PHOTO" -- 이벤트게시판 -> 사진
+      FOREIGN KEY (
+         "EVENT_SEQ" -- 이벤트번호
+      )
+      REFERENCES "EVENT_BOARD" ( -- 이벤트게시판
+         "EVENT_SEQ" -- 이벤트번호
+      );
+
+-- 이벤트게시판 -> 사진
+COMMENT ON CONSTRAINT "PHOTO"."FK_EVENT_BOARD_TO_PHOTO" IS '이벤트게시판 -> 사진';
+
+-- 사진
+ALTER TABLE "PHOTO"
+   ADD
+      CONSTRAINT "FK_REVIEW_TO_PHOTO" -- 리뷰 -> 사진
+      FOREIGN KEY (
+         "REV_SEQ" -- 리뷰번호
+      )
+      REFERENCES "REVIEW" ( -- 리뷰
+         "REV_SEQ" -- 리뷰번호
+      );
+
+-- 리뷰 -> 사진
+COMMENT ON CONSTRAINT "PHOTO"."FK_REVIEW_TO_PHOTO" IS '리뷰 -> 사진';
+
+-- 사진
+ALTER TABLE "PHOTO"
+   ADD
+      CONSTRAINT "FK_MAINBANNER_TO_PHOTO" -- 메인베너 -> 사진
+      FOREIGN KEY (
+         "BAN_SEQ" -- 배너번호
+      )
+      REFERENCES "MAINBANNER" ( -- 메인베너
+         "BAN_SEQ" -- 배너번호
+      );
+
+-- 메인베너 -> 사진
+COMMENT ON CONSTRAINT "PHOTO"."FK_MAINBANNER_TO_PHOTO" IS '메인베너 -> 사진';
+
+-- 적립금
+ALTER TABLE "POINTS"
+   ADD
+      CONSTRAINT "FK_MEMBERS_TO_POINTS" -- 유저 -> 적립금
+      FOREIGN KEY (
+         "USER_ID" -- ID
+      )
+      REFERENCES "MEMBERS" ( -- 유저
+         "USER_ID" -- ID
+      );
+
+-- 유저 -> 적립금
+COMMENT ON CONSTRAINT "POINTS"."FK_MEMBERS_TO_POINTS" IS '유저 -> 적립금';
+
+-- 적립금
+ALTER TABLE "POINTS"
+   ADD
+      CONSTRAINT "FK_PRODUCT_TO_POINTS" -- 상품 -> 적립금
+      FOREIGN KEY (
+         "PRO_SEQ" -- 상품번호
+      )
+      REFERENCES "PRODUCT" ( -- 상품
+         "PRO_SEQ" -- 상품번호
+      );
+
+-- 상품 -> 적립금
+COMMENT ON CONSTRAINT "POINTS"."FK_PRODUCT_TO_POINTS" IS '상품 -> 적립금';
+
+-- 장바구니
+ALTER TABLE "BASKET"
+   ADD
+      CONSTRAINT "FK_PRODUCT_TO_BASKET" -- 상품 -> 장바구니
+      FOREIGN KEY (
+         "PRO_SEQ" -- 상품번호
+      )
+      REFERENCES "PRODUCT" ( -- 상품
+         "PRO_SEQ" -- 상품번호
+      );
+
+-- 상품 -> 장바구니
+COMMENT ON CONSTRAINT "BASKET"."FK_PRODUCT_TO_BASKET" IS '상품 -> 장바구니';
+
+-- 장바구니
+ALTER TABLE "BASKET"
+   ADD
+      CONSTRAINT "FK_MEMBERS_TO_BASKET" -- 유저 -> 장바구니
+      FOREIGN KEY (
+         "USER_ID" -- ID
+      )
+      REFERENCES "MEMBERS" ( -- 유저
+         "USER_ID" -- ID
+      );
+
+-- 유저 -> 장바구니
+COMMENT ON CONSTRAINT "BASKET"."FK_MEMBERS_TO_BASKET" IS '유저 -> 장바구니';
+
+-- 메인베너
+ALTER TABLE "MAINBANNER"
+   ADD
+      CONSTRAINT "FK_PRODUCT_TO_MAINBANNER" -- 상품 -> 메인베너
+      FOREIGN KEY (
+         "PRO_SEQ" -- 상품번호
+      )
+      REFERENCES "PRODUCT" ( -- 상품
+         "PRO_SEQ" -- 상품번호
+      );
+
+-- 상품 -> 메인베너
+COMMENT ON CONSTRAINT "MAINBANNER"."FK_PRODUCT_TO_MAINBANNER" IS '상품 -> 메인베너';
+
+create sequence BAS_SEQ
+   start with 1 increment by 1;
+  
+  create sequence PRO_SEQ
+   start with 1 increment by 1;
+  
+  create sequence REV_SEQ
+   start with 1 increment by 1;
+  
+  create sequence DEL_SEQ
+   start with 1 increment by 1;
+  
+  create sequence USER_ID
+   start with 1 increment by 1;
+  
+  create sequence QNA_SEQ
+   start with 1 increment by 1;
+  
+  create sequence COUP_SEQ
+   start with 1 increment by 1;
+   
+   create sequence SEL_SEQ
+   start with 1 increment by 1;
+   
+   create sequence POINT_SEQ
+   start with 1 increment by 1;
+   
+   create sequence NOTICE_SEQ
+   start with 1 increment by 1;
+   
+   create sequence PHOTO_SEQ
+   start with 1 increment by 1;
+   
+   create sequence EVENT_SEQ
+   start with 1 increment by 1;
+   
+   create sequence DET_SEQ
+   start with 1 increment by 1;
+   
+   COMMIT;

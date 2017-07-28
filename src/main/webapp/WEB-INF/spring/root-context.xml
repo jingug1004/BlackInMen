@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	    http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/tx
+    	http://www.springframework.org/schema/tx/spring-tx.xsd
+    	">
+
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<!-- 스프링이 관리하는 패키지에 org.zerock.persistence 를 추가한다. -->
+    <context:annotation-config/>
+    <context:component-scan base-package="com.eagle.men_in_black.*"/>
+    <!-- 어노테이션에 기반한 트랜잭션 활성화 -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+
+	<!-- JDBC의 연결을 처리하는 기능을 가진 DataSource -->
+    <!--<bean id="dataSource"-->
+       <!--class="org.apache.commons.dbcp.BasicDataSource"-->
+       <!--p:driverClassName="oracle.jdbc.driver.OracleDriver"-->
+       <!--p:url="jdbc:oracle:thin:@tydb.ckiuongolcyg.ap-northeast-2.rds.amazonaws.com:1521:ORCL"-->
+       <!--p:username="TYDB" -->
+       <!--p:password="95259525"-->
+       <!--p:maxActive="10"-->
+       <!--p:maxIdle="5"-->
+       <!--p:maxWait="-1"-->
+    <!--/>-->
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close"
+       p:driverClassName="oracle.jdbc.driver.OracleDriver"
+       p:url="jdbc:oracle:thin:@218.55.15.117:1521:XE"
+       p:username="seedtec"
+       p:password="seed5751"
+       p:maxActive="10"
+       p:maxIdle="5"
+       p:maxWait="-1"
+    />
+
+	<!-- SqlSessionFactoryBean 생성 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+ 		<!-- mybatis-config.xml 파일이 스프링이 동작할 때 같이 동작하도록 설정한 것. -->
+		<property name="configLocation" value="classpath:mybatis-config.xml"></property>
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="mapperLocations" value="classpath:mappers/**/*.xml"></property>
+	</bean>
+
+	<!-- sqlSession 을 SqlSessionTemplate으로 만든다. -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+	
+	
+	<bean id="transactionManager" 
+	class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	<property name="dataSource" ref="dataSource"/>
+	</bean> 
+	
+	<!-- mail bean -->
+ <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+  <property name="host" value="smtp.gmail.com"/>
+  <property name="port" value="587"/>
+  <property name="username" value="eagle5sist@gamil.com"/> <!-- 메일주소 -->
+  <property name="password" value="1q2w3e4r!"/> <!-- 메일비번 -->
+  <property name="javaMailProperties">
+  <props>
+    <prop key="mail.smtp.auth">true</prop>
+    <prop key="mail.smtp.starttls.enable">true</prop>
+    <prop key="mail.smtp.timeout">8500</prop>  <!-- mail 서버 연결시 timeout 시간 설정 -->
+    <prop key="mail.debug">true</prop> <!-- log를 보고 싶다면 사용 -->
+  </props>
+  </property>
+ </bean>		
+
+  
+ 
+</beans>

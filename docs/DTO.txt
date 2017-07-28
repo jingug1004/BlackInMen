@@ -1,0 +1,285 @@
+유저 마이페이지			
+
+private int CONDITION;
+    private int TOT_CNT;
+    private	String	BODYTYPE;
+    private	String	COLOR;
+    private	String	COUP_LIMIT;
+    private	String	COUP_USE;
+    private	String	DEL_ADDRESS;
+    private	String	DEL_CONTENT;
+    private	int	DEL_NUMBER;
+    private	String	DEL_POSTCODE;
+    private	int	DEL_PRICE;
+    private	int	DEL_SEQ;
+    private	String	DEL_STEP;
+    private	String	DEL_TIME;
+    private	String	ITEM;
+    private	String SUB_ITEM;
+    private	String	MATERIAL;
+    private	String	NEW_ITEM;
+    private	int	PHOTO_SEQ;
+    private	String	PRO_CONTENT;
+    private	String	PRO_NAME;
+    private	int	PRO_PRICE;
+    private	int	PRO_SEQ;
+    private	String	PRO_SIZE;
+    private	String	PRO_SEQ_st;
+    private	String	QNA_OPEN;
+    private	int	QNA_SEQ;
+    private	String	QNA_STEP;
+    private	String	QNA_TIME;
+    private	String	QNA_TYPE;
+    private	String	REC_NAME;
+    private	String	REC_TEL;
+    private	int	REV_REF;
+    private	String	SEL_NUM;
+    private	String	SEL_TIME;
+    private	int	STOCK;
+    private	String	WASH;
+    private	String	POINT_REASON;
+    private	String	REVIEW_SEQ;
+
+--------------------------------
+
+씨이오마이페이지
+		
+private String REV_CONTENT;
+private String QNA_SEQ;
+private String QNA_TITLE;
+private String QNA_TIME;
+private String QNA_TYPE;
+private String REV_TITLE;
+private String REV_TIME;
+private String SCORE;
+private String SELTIME;
+private	String BODYTYPE;
+private	String COLOR;
+private	int	COUPON;
+private	int	DET_SEQ;
+private	int	DISCOUNT;
+private	int	EVENT_SEQ;
+private	int	FINAL_PRICE;
+private	String	ITEM;
+private	String	MATERIAL;
+private	String	ORIGINAL_NAME;
+private	int	PHOTO_SEQ;
+private	int	POINT;
+private	String	POSTCODE;
+private	String	PRO_CONTENT;
+private	String	PRO_DETAIL;
+private	String	PRO_NAME;
+private	int	PRO_PRICE;
+private	int	PRO_SEQ;
+private	String	PRO_SIZE;
+private	int	REV_SEQ;
+private	String	SALE_CNT;
+private	String	SEL_COLOR;
+private	int	SEL_NUM;
+private	int	SEL_SEQ;
+private	String	SEL_SIZE;
+private	String	SEL_TIME;
+private	int	STOCK;
+private	String	STORED_NAME;
+private	String	SUB_ITEM;
+private	String	USER_ID;
+private	String	WASH;
+private	String	NEW_ITEM;
+private int TOT_CNT;
+private int DEL_SEQ;
+private String DEL_STEP;
+private String SIZE;
+private String START_DATE;
+private String END_DATE;
+private String SEARCH;
+private int propricesum;
+private String PAGE_NUM;           
+private String RETURN              ;
+private String RE_OPTION           ;
+private String RE_REASON           ;
+private String CA_ACCOUNT          ;
+private String DEL_DETAIL_ADDRESS  ;
+private String PRO_SEQ_st;
+private String DEL_TIME     ;
+private int COUP_SEQ;
+private String REVIEW_SEQ;
+
+--------------------------------
+카테고리
+
+private	String	PRO_NAME;
+	private	String	PRO_CONTENT;
+	private	int	PRO_SEQ;
+	private	int	PRO_PRICE;
+	private	String	ITEM;
+	private	String 	SUB_ITEM;
+	private	String	STORED_NAME;
+	private	String	NEW_ITEM;
+	private	int	PHOTO_SEQ;
+	private	String	BODYTYPE;
+	private	String	WASH;
+	private	String	MATERIAL;
+	private	int	SCORE;
+	private	String	COLOR;
+	private	String	PRO_SIZE;
+	private	String	STOCK;
+	private	int	BAS_SEQ;
+	private	String	USER_ID;
+	private int TOT_CNT;
+
+
+---------------------
+디테일
+
+private	int	BAS_PRO_NUM;
+	private	int	BAS_SEQ;
+	private	String	BODYTYPE;
+	private	String	CANCLE;
+	private	String	COLOR;
+	private	String	COUP_LIMIT;
+	private	String	COUP_USE;
+	private	String	COUP_NAME;
+	private	int 	COUP_SEQ;
+	private	int 	COUP_PRICE;
+	private	int 	CONDITION;
+	private	String 	COUP_TIME;
+	private	int	COUPON;
+	private	String	DEL_ADDRESS;
+	private	String	DEL_CONTENT;
+	private	int	DEL_NUMBER;
+	private	String	DEL_POSTCODE;
+	private	int	DEL_PRICE;
+	private	int	DEL_SEQ;
+	private	String	DEL_STEP;
+	private	String	DEL_TIME;
+	private	int	FINAL_PRICE;
+	private	String	ITEM;
+	private	String	MATERIAL;
+	private	String	NEW_ITEM;
+	private	int	PHOTO_SEQ;
+	private	String	POINT;
+	private	String	PRO_CONTENT;
+	private	String	PRO_DETAIL;
+	private	String	PRO_NAME;
+	private	int	PRO_PRICE;
+	private	int	PRO_SEQ;
+	private	String	PRO_SIZE;
+	private	String	QNA_OPEN;
+	private	int	QNA_REF;
+	private	int	QNA_SEQ;
+	private	String	QNA_STEP;
+	private	String	QNA_TIME;
+	private	String	QNA_TITLE;
+	private	String	QNA_CONTENT;
+	private	String	QNA_TYPE;
+	private	String	REC_NAME;
+	private	String	REC_TEL;
+	private	int	REV_REF;
+	private	int	REV_SEQ;
+	private	String	REV_STEP;
+	private	String	REV_TIME;
+	private	String	REV_TITLE;
+	private String  REV_CONTENT;
+	private	int	SCORE;
+	private	int	AVG_SCORE;
+	private	String	SEL_COLOR;
+	private	String	SEL_NUM;
+	private	int	SEL_SEQ;
+	private	String	SEL_SIZE;
+	private	String	SEL_TIME;
+	private	int	STOCK;
+	private	String	STORED_NAME;
+	private	String ORIGINAL_NAME;
+	private int TOT_CNT;
+
+
+---------------------
+파일모델
+
+private String attach_path; 
+	private MultipartFile upload; 
+	private String filename; 
+	private String CKEditorFuncNum; 
+	
+	public String getAttach_path() { 
+		return this.attach_path; } 
+	public void setAttach_path(String attach_path) { 
+		this.attach_path = attach_path; } 
+	public MultipartFile getUpload() { 
+		return upload; } 
+	public void setUpload(MultipartFile upload) {
+		this.upload = upload; } 
+	public String getFilename() {
+		return this.filename; } 
+	public void setFilename(String filename) { 
+		this.filename = filename; } 
+	public String getCKEditorFuncNum() {
+		return this.CKEditorFuncNum; } 
+	public void setCKEditorFuncNum(String CKEditorFuncNum) { 
+		this.CKEditorFuncNum = CKEditorFuncNum; } 
+
+
+
+------------------------
+메인
+
+
+private int BAN_SEQ;
+    private String DETAILADDRESS;
+    private String ADDRESS;
+    private String BIRTH;
+    private String BODYTYPE;
+    private int DISCOUNT;
+    private String EMAIL;
+    private int EVENT_SEQ;
+    private String ITEM;
+    private String MATERIAL;
+    private String NEW_ITEM;
+    private String ORIGINAL_NAME;
+    private int PHOTO_SEQ;
+    private String POSTCODE;
+    private String PRO_CONTENT;
+    private String PRO_DETAIL;
+    private String PRO_NAME;
+    private int PRO_PRICE;
+    private int PRO_SEQ;
+    private int REV_SEQ;
+    private String SALE_CNT;
+    private String SEX;
+    private String STORED_NAME;
+    private String SUB_ITEM;
+    private String TEL;
+    private String USER_ID;
+    private String USER_NAME;
+    private String USER_PW;
+    private String WASH;
+    private String BAN_TIME;
+
+-----------------------------------
+
+서비스
+
+private int TOT_CNT;
+	private	int	NOTICE_SEQ;
+	private	String	NOTICE_TITLE;
+	private	String	NOTICE_CONTENT;
+	private	String	NOTICE_TIME;
+	private	int	EVENT_SEQ;
+	private	String	EVENT_TITLE;
+	private	String	EVENT_CONTENT;
+	private	String	EVENT_TIME;
+	private	String	STORED_NAME;
+	private String ORIGINAL_FILE_NAME;
+	private String STORED_FILE_NAME;
+	private String COUP_NAME ;
+	private int COUP_PRICE;
+	private int CONDITION ;
+	private String COUP_TIME ;
+	private String COUP_LIMIT;
+	private String COUP_USE  ;
+	private String USER_ID   ;
+	private int COUP_SEQ;
+	private String COUP_RECV;
+
+--------------------------------------
+

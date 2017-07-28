@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eagle.repository.mapper.Main">
+
+<select id="do_search_pw" parameterType="String" resultType="com.eagle.men_in_black.model.MainDto">
+SELECT USER_ID, USER_PW, USER_NAME, TEL, ADDRESS, POSTCODE, SEX, BIRTH, EMAIL, DETAILADDRESS  
+FROM MEMBERS 
+WHERE USER_ID=#{id}
+</select>
+
+<select id="do_search_email" parameterType="String" resultType="com.eagle.men_in_black.model.MainDto">
+SELECT EMAIL  
+FROM MEMBERS 
+WHERE EMAIL=#{email}
+</select>
+
+<insert id="do_join_MIB" parameterType="hashmap">
+INSERT
+INTO MEMBERS(USER_ID, USER_PW, USER_NAME, TEL, ADDRESS, POSTCODE, SEX,BIRTH, EMAIL, DETAILADDRESS)
+  VALUES
+  (#{ID}, #{PW}, #{NAME}, #{TEL}, #{ADDRESS}, #{POSTCODE}, '사람',#{BIRTH}, #{EMAIL}, #{DETAILADDRESS} )
+
+</insert>
+
+<select id="do_select_banner" resultType="com.eagle.men_in_black.model.MainDto">
+SELECT NVL(B.BAN_SEQ,0) BAN_SEQ, NVL(B.STORED_NAME,'none') STORED_NAME,NVL(A.PRO_SEQ,0) PRO_SEQ 
+FROM MAINBANNER A INNER JOIN PHOTO B 
+ON A.BAN_SEQ=B.BAN_SEQ
+RIGHT OUTER JOIN DUAL ON A.BAN_SEQ=B.BAN_SEQ
+ORDER BY A.BAN_SEQ DESC
+</select>
+
+<select id="do_select_bestItem" parameterType="String" resultType="com.eagle.men_in_black.model.MainDto">
+<![CDATA[  
+SELECT * FROM
+(SELECT AA.SALE_CNT,BB.STORED_NAME,AA.PRO_NAME,AA.PRO_CONTENT,AA.PRO_SEQ,AA.PRO_PRICE  
+FROM (SELECT COUNT(A.PRO_SEQ) SALE_CNT, B.PRO_NAME, B.PRO_CONTENT, B.PRO_SEQ, B.PRO_PRICE  
+FROM  SALES A INNER JOIN PRODUCT B 
+ON A.PRO_SEQ=B.PRO_SEQ 
+WHERE B.ITEM=#{ITEM}    
+GROUP BY A.PRO_SEQ,B.PRO_NAME,B.PRO_CONTENT,B.PRO_SEQ,B.PRO_PRICE 
+ORDER BY SALE_CNT DESC) AA LEFT OUTER JOIN PHOTO BB
+ON AA.PRO_SEQ=BB.PRO_SEQ
+WHERE BB.STORED_NAME LIKE '%MAIN%'
+ORDER BY SALE_CNT DESC)
+WHERE ROWNUM <=3
+]]> 
+</select>
+
+<select id="do_select_subitemheader" resultType="com.eagle.men_in_black.model.MainDto">
+SELECT SUB_ITEM, ITEM FROM PRODUCT  GROUP BY SUB_ITEM,ITEM ORDER BY ITEM , SUB_ITEM
+</select>
+
+<insert id="do_insert_point" parameterType="String">
+INSERT
+INTO POINTS
+  (
+    POINT_SEQ,
+    POINT_TIME,
+    POINT_PRICE,
+    POINT_FINAL,
+    INCREASE,
+    USER_ID,
+    PRO_SEQ,
+    DEL_SEQ,
+    POINT_REASON
+  )
+  VALUES
+  (
+    POINT_SEQ.NEXTVAL,
+    SYSDATE,
+    2000,
+    2000,
+    'PLUS',
+    #{USER_ID},
+    0,
+    0,
+    '회원가입 지급'
+  )
+</insert>
+
+<insert id="do_insert_coup" parameterType="String">
+  INSERT
+INTO COUPON
+  (
+    COUP_SEQ,
+    COUP_NAME,
+    COUP_PRICE,
+    CONDITION,
+    COUP_TIME,
+    COUP_LIMIT,
+    COUP_USE,
+    USER_ID,
+    COUP_RECV
+  )
+  VALUES
+  (
+    COUP_SEQ.NEXTVAL,
+    '회원가입쿠폰',
+    10000,
+    20000,
+    SYSDATE,
+    SYSDATE+365,
+    '가능',
+    #{USER_ID},
+    0
+  )
+</insert>
+
+
+</mapper>

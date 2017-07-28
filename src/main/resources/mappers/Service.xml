@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eagle.repository.mapper.Service">
+
+
+	<!--공지사항 불러오기 -->
+	<select id="do_service_main" parameterType="hashmap"
+		resultType="com.eagle.men_in_black.model.ServiceDto">
+		SELECT TT1.*
+		FROM (
+		SELECT ROWNUM RNUM,T1.*,T2.*
+		from(
+
+		SELECT *
+		FROM NOTICE_BOARD
+		ORDER BY NOTICE_SEQ DESC
+
+		) T1
+		NATURAL JOIN
+		(
+		SELECT
+		COUNT(NOTICE_BOARD.NOTICE_SEQ) TOT_CNT FROM NOTICE_BOARD
+		) T2
+		) TT1
+		WHERE RNUM BETWEEN (#{PAGE_SIZE} * (#{PAGE_NUM}-1)+1) and
+		((#{PAGE_SIZE}*(#{PAGE_NUM}-1))+#{PAGE_SIZE})
+
+	</select>
+
+	<!--공지사항 디테일 -->
+	<select id="do_service_detail" parameterType="String"
+		resultType="com.eagle.men_in_black.model.ServiceDto">
+		SELECT *
+		FROM NOTICE_BOARD
+		WHERE NOTICE_SEQ=#{seq}
+
+
+	</select>
+
+	<!--공지사항 등록 -->
+	<insert id="do_service_reg" parameterType="hashmap">
+		INSERT INTO
+		NOTICE_BOARD
+		(NOTICE_SEQ,NOTICE_TITLE,NOTICE_CONTENT,NOTICE_TIME)
+		<!--시퀀스 설정하고 등록 -->
+		VALUES(NOTICE_SEQ.NEXTVAL,#{noticetitle},#{content},SYSDATE)
+
+	</insert>
+
+	<!--공지사항 수정 -->
+	<update id="do_service_update" parameterType="hashmap">
+		UPDATE
+		NOTICE_BOARD
+		SET
+		NOTICE_TITLE=#{noticetitle},NOTICE_CONTENT=#{content},NOTICE_TIME= SYSDATE
+		WHERE NOTICE_SEQ=#{seq}
+
+
+	</update>
+
+	<!--공지사항 삭제 -->
+	<delete id="do_service_delete" parameterType="int">
+		DELETE
+		FROM
+		NOTICE_BOARD
+		WHERE NOTICE_SEQ =#{seq}
+
+	</delete>
+
+	<!--이벤트 불러오기 -->
+	<select id="do_event_main" parameterType="hashmap"
+		resultType="com.eagle.men_in_black.model.ServiceDto">
+		SELECT TT1.*
+		FROM (
+		SELECT ROWNUM RNUM,T1.*,T2.*
+		from(
+
+		SELECT
+		NVL(B.STORED_NAME,'none') STORED_NAME,NVL(A.EVENT_SEQ,0) EVENT_SEQ
+		FROM EVENT_BOARD A INNER JOIN PHOTO B
+		ON(A.EVENT_SEQ = B.EVENT_SEQ)
+		RIGHT OUTER JOIN DUAL ON A.EVENT_SEQ = B.EVENT_SEQ
+		ORDER BY PHOTO_SEQ
+		DESC
+
+		) T1
+		NATURAL JOIN
+		(
+		SELECT
+		COUNT(EVENT_BOARD.EVENT_SEQ) TOT_CNT FROM
+		EVENT_BOARD
+		) T2
+		) TT1
+		WHERE RNUM BETWEEN (#{PAGE_SIZE} *
+		(#{PAGE_NUM}-1)+1) and
+		((#{PAGE_SIZE}*(#{PAGE_NUM}-1))+#{PAGE_SIZE})
+
+	</select>
+
+	<!--이벤트 디테일 -->
+	<select id="do_event_detail" parameterType="com.eagle.men_in_black.model.ServiceDto"
+		resultType="com.eagle.men_in_black.model.ServiceDto">
+		SELECT *
+		FROM EVENT_BOARD A INNER JOIN PHOTO B
+		ON(A.EVENT_SEQ = B.EVENT_SEQ)
+		WHERE A.EVENT_SEQ=#{seq}
+
+
+	</select>
+
+	<!--이벤트 등록 -->
+	<insert id="do_event_reg" parameterType="hashmap">
+		INSERT INTO
+		EVENT_BOARD
+		(EVENT_SEQ,EVENT_TITLE,EVENT_CONTENT,EVENT_TIME)
+		<!--시퀀스 설정하고 등록 -->
+		VALUES(EVENT_SEQ.NEXTVAL,#{eventtitle},#{eventcontent},SYSDATE)
+
+	</insert>
+
+	<!-- 이벤트 메인 사진 등록할때 event seq 가져오기 -->
+	<select id="do_select_eventseq" resultType="int">
+		select max(EVENT_SEQ) from EVENT_BOARD
+	</select>
+
+
+	<!-- 이벤트 메인 사진 등록 -->
+	<insert id="do_event_photo" parameterType="com.eagle.men_in_black.model.ServiceDto">
+		INSERT
+		INTO PHOTO
+		(
+		PHOTO_SEQ,
+		STORED_NAME,
+		ORIGINAL_NAME,
+		EVENT_SEQ
+		)
+		VALUES
+		(
+		PHOTO_SEQ.NEXTVAL,
+		#{STORED_FILE_NAME},
+		#{ORIGINAL_FILE_NAME},
+		#{EVENT_SEQ}
+		)
+
+	</insert>
+
+
+
+
+	<!--이벤트 수정 -->
+	<update id="do_event_update" parameterType="hashmap">
+		UPDATE
+		EVENT_BOARD
+		SET
+		EVENT_TITLE=#{eventtitle},EVENT_CONTENT=#{content},EVENT_TIME=SYSDATE
+		WHERE EVENT_SEQ=#{seq}
+
+	</update>
+
+	<!--이벤트 사진수정 -->
+	<update id="do_photo_update" parameterType="com.eagle.men_in_black.model.ServiceDto">
+		UPDATE
+		PHOTO
+		SET
+		STORED_NAME=#{STORED_FILE_NAME},ORIGINAL_NAME=#{ORIGINAL_FILE_NAME}
+		WHERE EVENT_SEQ=#{EVENT_SEQ}
+	</update>
+
+	<!--이벤트 사진삭제 -->
+	<delete id="do_photo_delete" parameterType="int">
+		DELETE
+		FROM
+		PHOTO
+		WHERE
+		EVENT_SEQ =#{SEQ}
+	</delete>
+
+	<!--이벤트 삭제 -->
+	<delete id="do_event_delete" parameterType="int">
+		DELETE
+		FROM
+		EVENT_BOARD
+		WHERE EVENT_SEQ =#{seq}
+
+	</delete>
+
+	<!-- 쿠폰 등록 -->
+	<insert id="do_insert_coupon" parameterType="com.eagle.men_in_black.model.ServiceDto">
+		INSERT
+		INTO COUPON
+		(
+		COUP_SEQ,
+		COUP_NAME,
+		COUP_PRICE,
+		CONDITION,
+		COUP_TIME,
+		COUP_LIMIT,
+		COUP_USE,
+		USER_ID,
+		COUP_RECV
+		)
+		VALUES
+		(
+		COUP_SEQ.NEXTVAL,
+		#{COUP_NAME},
+		#{COUP_PRICE},
+		#{CONDITION},
+		SYSDATE, 
+		#{COUP_LIMIT},
+		'가능',
+		#{USER_ID},
+		#{COUP_RECV}
+		)
+	</insert>
+
+
+	<select id="do_select_couseq" resultType="int">
+		SELECT MAX(COUP_SEQ)
+		FROM COUPON
+	</select>
+
+
+	<!-- 쿠폰등록 -->
+	<insert id="do_inser_coupt" parameterType="com.eagle.men_in_black.model.ServiceDto">
+		INSERT
+		INTO PHOTO
+		(
+		PHOTO_SEQ,
+		STORED_NAME,
+		ORIGINAL_NAME,
+		COUP_SEQ
+		)
+		VALUES
+		(
+		PHOTO_SEQ.NEXTVAL,
+		#{STORED_FILE_NAME},
+		#{ORIGINAL_FILE_NAME},
+		#{COUP_SEQ}
+		)
+	</insert>
+
+
+
+	<!--쿠폰 리스트 불로오기 -->
+	<select id="do_select_couplist" resultType="com.eagle.men_in_black.model.ServiceDto">
+		SELECT
+		A.COUP_SEQ,
+		A.COUP_NAME,
+		A.COUP_PRICE,
+		A.CONDITION,
+		A.COUP_TIME,
+		A.COUP_LIMIT,
+		A.COUP_USE,
+		A.USER_ID,
+		B.STORED_NAME
+		FROM COUPON A INNER JOIN PHOTO B
+		ON A.COUP_SEQ=B.COUP_SEQ
+		WHERE USER_ID='adm'
+		AND COUP_LIMIT>SYSDATE
+	</select>
+
+	<select id="do_selelct_coupdt" parameterType="int"
+		resultType="com.eagle.men_in_black.model.ServiceDto">
+		SELECT A.COUP_NAME,
+		A.COUP_SEQ,
+		A.COUP_PRICE,
+		A.COUP_TIME,
+		A.CONDITION,
+		A.COUP_USE,
+		A.COUP_LIMIT,
+		A.USER_ID,
+		B.STORED_NAME
+		FROM COUPON A INNER JOIN PHOTO B
+		ON(A.COUP_SEQ = B.COUP_SEQ)
+		WHERE A.COUP_SEQ= #{seq}
+
+	</select>
+
+	<select id="check_coupon" parameterType="hashmap" resultType="int">
+		select count(*) from COUPON where USER_ID=#{userid} and
+		COUP_RECV=#{seq}
+	</select>
+
+
+
+
+	<!--쿠폰 수정 -->
+	<update id="do_coup_update" parameterType="com.eagle.men_in_black.model.ServiceDto">
+	UPDATE
+	COUPON
+	SET
+		COUP_NAME=#{COUP_NAME},
+		COUP_PRICE=#{COUP_PRICE},
+		CONDITION=#{CONDITION},
+		COUP_LIMIT=#{COUP_LIMIT}
+
+	WHERE COUP_SEQ=#{COUP_SEQ}
+
+	</update>
+
+
+
+	<!--쿠폰 사진수정 -->
+	<update id="do_coupphoto_update" parameterType="com.eagle.men_in_black.model.ServiceDto">
+	UPDATE
+	PHOTO
+	SET
+		STORED_NAME=#{STORED_FILE_NAME},
+		ORIGINAL_NAME=#{ORIGINAL_FILE_NAME}
+	WHERE COUP_SEQ=#{COUP_SEQ}
+	</update>
+
+	<!--쿠폰 사진삭제 -->
+	<delete id="do_coupphoto_delete" parameterType="int">
+		DELETE
+		FROM
+		PHOTO
+		WHERE COUP_SEQ =#{SEQ}
+	</delete>
+
+	<!--쿠폰 삭제 -->
+	<delete id="do_coup_delete" parameterType="int">
+		DELETE
+		FROM
+		COUPON
+		WHERE
+		COUP_SEQ =#{seq}
+
+	</delete>
+
+</mapper>
+
+	
+
+
+
+

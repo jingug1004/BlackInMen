@@ -1,0 +1,846 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eagle.repository.mapper.UserMypage">
+
+
+<!-- 메인최종포인트-->
+<select id="do_search_point" parameterType="String" resultType="com.eagle.men_in_black.model.UserMypageDto">
+SELECT
+POINT_FINAL
+FROM(
+     SELECT POINT_FINAL
+     FROM POINTS
+WHERE USER_ID = #{id}
+ORDER BY POINT_SEQ DESC
+)
+WHERE ROWNUM = 1
+</select>
+
+
+<!-- 메인포인트-->
+<select id="do_search_point5" parameterType="String" resultType="com.eagle.men_in_black.model.UserMypageDto">
+<![CDATA[
+SELECT * 
+FROM(SELECT 
+A.POINT_PRICE,
+A.INCREASE, 
+A.POINT_FINAL, 
+A.POINT_TIME,
+A.POINT_REASON,
+A.PRO_SEQ
+FROM POINTS A
+    WHERE USER_ID = #{id} 
+    ORDER BY POINT_SEQ DESC)
+WHERE ROWNUM <=5
+]]>
+</select>
+
+
+<!-- 메인쿠폰  AND COUP_LIMIT >  SYSDATE -->
+<select id="do_search_coupon" parameterType="String" resultType="com.eagle.men_in_black.model.UserMypageDto">
+<![CDATA[
+SELECT
+COUP_NAME ,
+COUP_PRICE
+FROM(
+SELECT
+COUP_NAME,
+COUP_PRICE
+FROM COUPON
+WHERE USER_ID  = #{id}
+AND COUP_USE = '가능'
+AND TO_CHAR(COUP_LIMIT, 'YYYY/MM/DD') >  TO_CHAR(SYSDATE, 'YYYY/MM/DD')
+)
+WHERE ROWNUM <=3
+]]>
+</select>
+ 
+
+    <!-- 구매한상품 -->
+<select id="do_search_buy" parameterType="String" resultType="com.eagle.men_in_black.model.UserMypageDto">
+<![CDATA[
+SELECT *
+FROM(
+SELECT A.SEL_SEQ,
+A.PRO_SEQ,
+A.SEL_NUM,
+A.SEL_TIME,
+A.FINAL_PRICE,
+C.PRO_NAME,
+A.DEL_SEQ,
+A.SEL_SIZE,
+A.SEL_COLOR,
+B.DEL_STEP,
+C.SUB_ITEM,
+D.STORED_NAME
+FROM SALES A JOIN  DELIVERY B
+ON A.USER_ID = B.USER_ID AND A.PRO_SEQ=B.PRO_SEQ
+JOIN PRODUCT C
+ON A.PRO_SEQ = C.PRO_SEQ
+JOIN PHOTO D
+ON C.PRO_SEQ = D.PRO_SEQ
+WHERE A.USER_ID = #{id} AND D.STORED_NAME LIKE '%MAIN%'
+ORDER BY B.DEL_SEQ DESC
+)
+WHERE ROWNUM <=5
+]]>
+</select>
+
+
+    <!-- 장바구니-->
+    <select id="do_search_basket" parameterType="String" resultType="com.eagle.men_in_black.model.UserMypageDto">
+<![CDATA[
+SELECT *
+FROM
+(
+SELECT
+A.PRO_SEQ,
+B.PRO_NAME,
+B.PRO_PRICE,
+A.PRO_SIZE,
+A.COLOR,
+A.BAS_PRO_NUM,
+B.SUB_ITEM,
+C.STORED_NAME
+FROM BASKET A JOIN PRODUCT B
+ON A.PRO_SEQ = B.PRO_SEQ
+JOIN PHOTO C
+ON A.PRO_SEQ = C.PRO_SEQ
+WHERE A.USER_ID =#{id}  AND C.STORED_NAME LIKE '%MAIN%'
+ORDER BY A.BAS_SEQ DESC
+)
+WHERE ROWNUM <=5
+]]>
+</select>
+
+
+<!-- qna -->
+<select id="do_search_qna" parameterType="String" resultType="com.eagle.men_in_black.model.UserMypageDto">
+<![CDATA[
+SELECT * 
+FROM
+(
+SELECT 
+A.PRO_SEQ, 
+B.PRO_NAME, 
+A.QNA_TITLE, 
+A.QNA_STEP,
+A.QNA_TIME,
+A.QNA_SEQ
+FROM QNA A JOIN PRODUCT B
+ON A.PRO_SEQ = B.PRO_SEQ
+WHERE A.USER_ID = #{id}
+)
+WHERE ROWNUM <=5
+]]>
+</select>
+
+<!-- 마이페이지메인end -->
+
+
+
+
+
+<!-- 구매한상품LIST  -->
+<!-- <select id="do_search_buylist" parameterType="hashmap" resultType="com.eagle.men_in_black.model.UserMypageDto">
+<![CDATA[
+SELECT TT1.*
+FROM (
+      SELECT ROWNUM RNUM,T1.*,T2.*
+      from(
+           SELECT B.SUB_ITEM,
+           A.SEL_NUM,
+           A.FINAL_PRICE,
+           A.COUPON,
+           A.POINT,
+           A.SEL_SIZE,
+           A.SEL_COLOR, 
+           A.SEL_TIME, 
+           B.PRO_NAME,
+           B.PRO_PRICE,
+           B.PRO_CONTENT,
+           C.STORED_NAME,
+           D.DEL_STEP,
+           D.DEL_SEQ,
+           A.PRO_SEQ
+           FROM SALES A JOIN PRODUCT B
+           ON A.PRO_SEQ = B.PRO_SEQ  
+           JOIN PHOTO C
+           ON B.PRO_SEQ = C.PRO_SEQ
+           JOIN DELIVERY D
+           ON A.USER_ID = D.USER_ID 
+           AND A.PRO_SEQ = D.PRO_SEQ
+           AND A.DEL_SEQ = D.DEL_SEQ
+           WHERE A.USER_ID = #{id} AND C.STORED_NAME LIKE '%MAIN%'
+           AND A.SEL_TIME BETWEEN TO_DATE(${START_DATE}) 
+             AND TO_DATE(${END_DATE})
+              ORDER BY DEL_SEQ DESC
+           ) T1
+          NATURAL JOIN
+          (
+          SELECT COUNT(*) TOT_CNT FROM SALES WHERE 
+          SALES.USER_ID=#{id}
+          AND SALES.SEL_TIME BETWEEN TO_DATE(${START_DATE}) 
+             AND TO_DATE(${END_DATE}) 
+          ) T2
+      ) TT1
+       WHERE RNUM BETWEEN (#{PAGE_SIZE} * (#{PAGE_NUM}-1)+1) and ((#{PAGE_SIZE}*(#{PAGE_NUM}-1))+#{PAGE_SIZE})
+
+]]>
+</select> -->
+<select id="do_search_buylist" parameterType="hashmap" resultType="com.eagle.men_in_black.model.UserMypageDto">
+<![CDATA[
+SELECT TT1.*
+FROM (
+      SELECT ROWNUM RNUM,T1.*,T2.*
+      from(
+			SELECT 
+				 A.DEL_SEQ
+				,A.DEL_ADDRESS
+				,A.DEL_POSTCODE
+				,A.DEL_NUMBER
+				,A.DEL_CONTENT
+				,A.REC_NAME
+				,A.REC_TEL
+				,A.DEL_TIME
+				,A.DEL_PRICE
+				,A.DEL_STEP
+				,A.PRO_SEQ PRO_SEQ_st
+				,A.USER_ID
+				,A.COUPON
+				,A.COUP_SEQ
+				,A.POINT
+				,A.FINAL_PRICE
+				,A.REVIEW_SEQ
+			FROM DELIVERY A
+			WHERE USER_ID=#{id}
+			ORDER BY A.DEL_SEQ DESC
+			) T1
+          NATURAL JOIN
+          (
+          SELECT COUNT(*) TOT_CNT FROM DELIVERY WHERE 
+          USER_ID= #{id}
+          AND DEL_TIME BETWEEN TO_DATE(${START_DATE}, 'YY-MM-DD') 
+             AND TO_DATE(${END_DATE}, 'YY-MM-DD') 
+          ) T2
+      ) TT1
+       WHERE RNUM BETWEEN (#{PAGE_SIZE} * (#{PAGE_NUM}-1)+1) and ((#{PAGE_SIZE}*(#{PAGE_NUM}-1))+#{PAGE_SIZE})
+
+]]>
+</select>
+
+<select id="do_search_buylist_photo" parameterType="int" resultType="com.eagle.men_in_black.model.UserMypageDto">
+<![CDATA[
+			SELECT A.PRO_NAME,B.STORED_NAME 
+			FROM PRODUCT A INNER JOIN PHOTO B 
+			ON A.PRO_SEQ = B.PRO_SEQ
+			WHERE A.PRO_SEQ = #{PRO_SEQ} AND
+			B.STORED_NAME LIKE '%MAIN%'		
+		
+			
+]]>
+</select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- 취소,반품,교환할 상품목록  -->
+<select id="do_search_cancel" parameterType="String" resultType="com.eagle.men_in_black.model.UserMypageDto">
+<![CDATA[
+SELECT DEL_SEQ,
+  DEL_ADDRESS,
+  DEL_POSTCODE,
+  DEL_NUMBER,
+  DEL_CONTENT,
+  REC_NAME,
+  REC_TEL,
+  DEL_TIME,
+  DEL_PRICE,
+  DEL_STEP,
+  PRO_SEQ,
+  USER_ID,
+  RETURN,
+  RE_OPTION,
+  RE_REASON,
+  CA_ACCOUNT,
+  DEL_DETAIL_ADDRESS,
+  COUPON,
+  COUP_SEQ,
+  POINT,
+  FINAL_PRICE
+FROM DELIVERY 
+WHERE DEL_SEQ=#{DEL_SEQ}
+]]>
+</select>
+
+
+    <!-- 취소,반품,교환  -->
+    <update id="do_update_cancel" parameterType="hashmap" >
+ <![CDATA[
+        UPDATE DELIVERY SET
+        RETURN = #{RETURN},
+        RE_OPTION = #{RE_OPTION},
+        RE_REASON=#{RE_REASON},
+        CA_ACCOUNT=#{CA_ACCOUNT},
+        DEL_STEP='변경사항 처리중'
+        WHERE DEL_SEQ = #{DEL_SEQ}
+        ]]>
+    </update>
+
+
+
+<!-- 포인트LIST -->
+<select id="do_search_pointlist" parameterType="hashmap" resultType="com.eagle.men_in_black.model.UserMypageDto">
+SELECT TT1.*
+FROM (
+      SELECT ROWNUM RNUM,T1.*,T2.*
+      FROM(
+           SELECT A.POINT_SEQ, A.POINT_PRICE,A.INCREASE, A.POINT_FINAL, A.POINT_TIME,A.PRO_SEQ, A.POINT_REASON
+           FROM POINTS A
+           WHERE USER_ID = #{id}
+           ORDER BY A.POINT_SEQ DESC
+           ) T1
+           NATURAL JOIN
+          (
+          SELECT COUNT(*) TOT_CNT FROM POINTS WHERE USER_ID=#{id}
+          ) T2
+             ) TT1
+            WHERE RNUM BETWEEN (#{PAGE_SIZE} * (#{PAGE_NUM}-1)+1) and ((#{PAGE_SIZE}*(#{PAGE_NUM}-1))+#{PAGE_SIZE})
+</select>
+
+
+<!-- 쿠폰LIST  -->
+<select id="do_search_couponlist" parameterType="hashmap" resultType="com.eagle.men_in_black.model.UserMypageDto">
+<![CDATA[
+SELECT TT1.*
+FROM (
+      SELECT ROWNUM RNUM,T1.*,T2.*
+      FROM(
+           SELECT COUP_NAME, COUP_PRICE, COUP_LIMIT, CONDITION 
+           FROM COUPON
+           WHERE USER_ID = #{id} AND COUP_USE = '가능' AND COUPON.COUP_LIMIT > SYSDATE ) T1
+           NATURAL JOIN
+          (
+           SELECT COUNT(*) TOT_CNT FROM COUPON WHERE USER_ID=#{id} AND COUPON.COUP_LIMIT > SYSDATE
+           ) T2
+    ) TT1
+     WHERE RNUM BETWEEN (#{PAGE_SIZEC} * (#{PAGE_NUMC}-1)+1) and ((#{PAGE_SIZEC}*(#{PAGE_NUMC}-1))+#{PAGE_SIZEC})
+]]>
+</select>
+
+
+    <!-- 장바구니LIST  -->
+    <select id="do_search_basketlist" parameterType="String" resultType="com.eagle.men_in_black.model.UserMypageDto">
+<![CDATA[
+SELECT
+               A.BAS_SEQ,
+               A.PRO_SEQ,
+               B.PRO_NAME,
+               B.PRO_PRICE,
+               A.PRO_SIZE,
+               A.COLOR,
+               A.BAS_PRO_NUM,
+               B.SUB_ITEM,
+               C.STORED_NAME
+               FROM BASKET A JOIN PRODUCT B
+               ON A.PRO_SEQ = B.PRO_SEQ
+               JOIN PHOTO C
+               ON A.PRO_SEQ = C.PRO_SEQ
+               WHERE A.USER_ID = #{id} AND  C.STORED_NAME LIKE '%MAIN%'
+               ORDER BY A.BAS_SEQ DESC
+
+]]> 
+</select>
+
+
+<!-- 장바구니 아이템 삭제  -->
+<delete id="do_delete_basketlist" parameterType="java.util.List" >
+
+      DELETE BASKET WHERE BAS_SEQ IN 
+      <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+            #{item.value}
+        </foreach>
+
+</delete>
+
+
+<!-- 내가쓴글QNA  -->
+<select id="do_search_myboradqna" parameterType="String" resultType="com.eagle.men_in_black.model.UserMypageDto">
+<![CDATA[
+SELECT * 
+FROM
+(
+SELECT 
+A.PRO_SEQ, 
+B.PRO_NAME, 
+A.QNA_TITLE, 
+A.QNA_STEP,
+A.QNA_TIME,
+A.QNA_SEQ
+FROM QNA A JOIN PRODUCT B
+ON A.PRO_SEQ = B.PRO_SEQ
+WHERE A.USER_ID = #{id}
+)
+WHERE ROWNUM <=5
+]]>
+</select>
+
+
+
+<!-- 내가쓴글리뷰 -->
+<select id="do_search_myboradreview" parameterType="String" resultType="com.eagle.men_in_black.model.UserMypageDto">
+<![CDATA[
+SELECT *
+FROM (SELECT 
+             A.REV_SEQ,
+             A.REV_TITLE,
+             A.REV_TIME,
+             A.REV_STEP,
+             A.SCORE,
+             B.PRO_NAME
+        FROM REVIEW A JOIN PRODUCT B
+        ON A.PRO_SEQ = B.PRO_SEQ
+        WHERE USER_ID =  #{id}
+        )
+WHERE ROWNUM <=5
+]]>
+</select>
+
+
+<!-- 리뷰 -->
+<select id="do_search_reviewlist" parameterType="hashmap" resultType="com.eagle.men_in_black.model.UserMypageDto">
+<![CDATA[
+SELECT TT1.*
+FROM (
+      SELECT ROWNUM RNUM,T1.*,T2.*
+      FROM(
+           SELECT REV_SEQ, REV_TITLE, REV_TIME,SCORE 
+           FROM REVIEW A JOIN PRODUCT B 
+           ON A.PRO_SEQ=B.PRO_SEQ
+           JOIN MEMBERS C
+           ON A.USER_ID=C.USER_ID
+           WHERE C.USER_ID=#{id} 
+           ) T1
+           NATURAL JOIN
+          (
+           SELECT COUNT(*) TOT_CNT FROM REVIEW WHERE USER_ID=#{id}
+) T2
+           ) TT1
+           WHERE RNUM BETWEEN (#{PAGE_SIZE} * (#{PAGE_NUM}-1)+1) and ((#{PAGE_SIZE}*(#{PAGE_NUM}-1))+#{PAGE_SIZE})
+]]>
+</select>
+
+
+<!-- qna LIST PAGEING -->
+<select id="do_search_qnalist" parameterType="hashmap" resultType="com.eagle.men_in_black.model.UserMypageDto">
+<![CDATA[
+SELECT TT1.*
+FROM (
+      SELECT ROWNUM RNUM,T1.*,T2.*
+      FROM(
+           SELECT A.QNA_SEQ, B.PRO_NAME, A.QNA_TITLE,A.QNA_TIME, A.QNA_STEP
+           FROM QNA A JOIN PRODUCT B 
+           ON A.PRO_SEQ=B.PRO_SEQ
+           WHERE A.USER_ID = #{id}  ) T1
+    NATURAL JOIN
+    (
+    SELECT COUNT(*) TOT_CNT FROM QNA WHERE USER_ID=#{id} 
+) T2
+           ) TT1
+            WHERE RNUM BETWEEN (#{PAGE_SIZE} * (#{PAGE_NUM}-1)+1) and ((#{PAGE_SIZE}*(#{PAGE_NUM}-1))+#{PAGE_SIZE})
+]]>
+</select>
+    <!-- 오늘본 상품 서치  -->
+<select id="do_search_goods" parameterType="java.util.HashMap" resultType="com.eagle.men_in_black.model.UserMypageDto">
+    SELECT  A.PRO_NAME,
+    A.PRO_CONTENT,
+    A.PRO_SEQ,
+    A.PRO_PRICE,
+    A.ITEM,
+    B.STORED_NAME
+    FROM PRODUCT A JOIN PHOTO B
+    ON   A.PRO_SEQ=B.PRO_SEQ
+    WHERE A.PRO_SEQ IN
+    <foreach collection="list1" item="item1" index="index" separator="," open="(" close=")">
+        #{item1}
+    </foreach>
+    AND B.STORED_NAME LIKE '%MAIN%'
+</select>
+    <!-- 회원정보수정  -->
+<update id="do_member_update" parameterType="hashmap" >
+UPDATE MEMBERS SET 
+	ADDRESS = #{ADDRESS},
+	EMAIL = #{EMAIL},
+	TEL=#{TEL},
+	POSTCODE=#{POSTCODE},
+	USER_PW=#{PW},
+	DETAILADDRESS=#{DETAILADDRESS}
+	WHERE USER_ID = #{USER_ID}
+</update>
+
+<!-- 리뷰 -->
+<insert id="do_insert_review" parameterType="hashmap" >
+INSERT
+INTO REVIEW
+  (
+    REV_SEQ,
+    REV_TITLE,
+    REV_CONTENT,
+    REV_TIME,
+    SCORE,
+    REV_REF,
+    USER_ID,
+    PRO_SEQ,
+    REV_STEP
+  )
+  VALUES
+  (
+    REV_SEQ.NEXTVAL,
+    #{REV_TITLE},
+    #{REV_CONTENT},
+     SYSDATE,
+    #{SCORE},
+     REV_SEQ.currval,
+    #{USER_ID},
+    #{PRO_SEQ},
+    'N'
+  )
+</insert>
+
+
+<!-- 사진 -->
+<insert id="do_insert_reviewphoto" parameterType="hashmap">
+INSERT
+INTO PHOTO
+  (
+    PHOTO_SEQ,
+    STORED_NAME,
+    ORIGINAL_NAME,
+    REV_SEQ
+  )
+  VALUES
+  (
+   	PHOTO_SEQ.NEXTVAL,
+    #{STORED_FILE_NAME},
+     #{ORIGINAL_FILE_NAME},
+    #{REV_SEQ}
+  )
+</insert>
+
+<select id="do_select_revseq" resultType="int">
+SELECT MAX(REV_SEQ) FROM REVIEW
+</select>
+
+
+<!-- 적릭금 지급 -->
+<insert id="do_insert_point" parameterType="hashmap">
+<![CDATA[
+INSERT
+INTO POINTS
+           (
+           POINT_SEQ,
+           POINT_TIME,
+           POINT_PRICE,
+           POINT_FINAL,
+           INCREASE,
+           USER_ID,
+           PRO_SEQ,
+           DEL_SEQ,
+           POINT_REASON
+           )
+VALUES
+      (
+      POINT_SEQ.NEXTVAL,
+      SYSDATE,
+      (
+       SELECT (PRO_PRICE)/20 AS POINT
+       FROM PRODUCT
+       WHERE PRO_SEQ= #{PRO_SEQ}),
+             ((
+                SELECT POINT_FINAL 
+                FROM 
+                    (SELECT POINT_FINAL
+                     FROM POINTS
+                      WHERE USER_ID =#{USER_ID}
+                      ORDER BY POINT_SEQ DESC
+                      )
+                WHERE ROWNUM =1)
+               
+      +
+             (
+              SELECT (PRO_PRICE)/20 AS POINT
+              FROM PRODUCT
+              WHERE PRO_SEQ= #{PRO_SEQ}
+             )
+             ) ,
+             'PLUS' ,
+             #{USER_ID} ,
+             #{PRO_SEQ},
+             #{DEL_SEQ},
+             '상품구입'
+             
+   )
+
+]]>
+</insert>
+
+<!-- 구매확정  -->
+<update id="do_update_del_step" parameterType="int" >
+UPDATE DELIVERY
+SET DEL_STEP='구매확정'
+WHERE DEL_SEQ= #{del_seq}
+</update>
+
+
+<!-- 리뷰작성완료  -->
+<update id="do_update_REVIEW_SEQ" parameterType="com.eagle.men_in_black.model.DetailDto" >
+UPDATE DELIVERY
+SET REVIEW_SEQ=#{REVIEW_SEQ}
+WHERE DEL_SEQ= #{DEL_SEQ}
+</update>
+
+<!-- 리뷰작성완료  -->
+<update id="do_update_del_step2" parameterType="int" >
+UPDATE DELIVERY
+SET DEL_STEP='리뷰완료'
+WHERE DEL_SEQ= #{DEL_SEQ}
+</update>
+
+<!-- 리뷰읽기  -->
+<select id="do_selectReviewDetail" parameterType="int" resultType="com.eagle.men_in_black.model.DetailDto">
+SELECT 
+REV_SEQ,
+REV_TITLE,
+REV_CONTENT,
+REV_TIME,
+NVL(SCORE,0) SCORE,
+REV_REF,
+USER_ID,
+PRO_SEQ,
+REV_STEP,
+NVL((select PHOTO.STORED_NAME from PHOTO where rev_seq=#{REV_SEQ}), 'none') STORED_NAME
+FROM REVIEW 
+WHERE REV_SEQ=#{REV_SEQ}
+</select>
+
+
+<update id="do_update_review" parameterType="hashmap" >
+UPDATE REVIEW
+SET 
+REV_TITLE   = #{REV_TITLE}
+,REV_CONTENT = #{REV_CONTENT}
+,SCORE       = #{SCORE}
+WHERE REV_SEQ = #{REV_SEQ}
+</update>
+
+<update id="do_update_reviewphoto" parameterType="hashmap" >
+UPDATE PHOTO
+SET
+STORED_NAME   =  #{STORED_FILE_NAME}
+,ORIGINAL_NAME = #{ORIGINAL_FILE_NAME}
+WHERE REV_SEQ  =   #{REV_SEQ}
+
+</update>
+
+    <!-- qna 상세  -->
+    <select id="do_search_qnadatail" parameterType="String" resultType="com.eagle.men_in_black.model.UserMypageDto">
+        <![CDATA[
+        SELECT *
+        FROM QNA
+        WHERE QNA_SEQ = #{QNA_SEQ}
+]]>
+    </select>
+
+<update id="do_update_qna" parameterType="hashmap" >
+UPDATE QNA
+SET
+QNA_TITLE   = #{QNA_TITLE}
+,QNA_CONTENT = #{QNA_CONTENT}
+,QNA_OPEN    = #{QNA_OPEN}
+,QNA_TYPE    = #{CA_REASON}
+WHERE QNA_SEQ   = ${QNA_SEQ}
+</update>
+
+<delete id="do_delete_qna" parameterType="int" >
+DELETE
+FROM QNA
+WHERE QNA_REF = #{QNA_SEQ}
+</delete>
+
+ <delete id="do_delete_reviewList" parameterType="int" >
+    DELETE REVIEW WHERE REV_REF = #{REV_SEQ}
+ </delete>
+
+ <delete id="do_delete_reviewPhoto" parameterType="int" >
+     DELETE PHOTO WHERE REV_SEQ = #{REV_SEQ}
+ </delete>
+    
+    
+    
+<!-- 문의 답글  -->
+<insert id="do_insert_qnareply" parameterType="hashmap">
+INSERT
+INTO QNA
+  (
+    QNA_SEQ,
+    QNA_TITLE,
+    QNA_CONTENT,
+    QNA_TIME,
+    QNA_OPEN,
+    QNA_REF,
+    QNA_TYPE,
+    QNA_STEP,
+    USER_ID,
+    PRO_SEQ
+  )
+  VALUES
+  (
+    QNA_SEQ.NEXTVAL,
+    #{QNA_TITLE},
+    #{QNA_CONTENT},
+    SYSDATE,
+    #{QNA_OPEN},
+    #{QNA_REF},
+    #{QNA_TYPE},
+    'Y',
+    #{USER_ID},
+    #{PRO_SEQ}
+  )
+</insert>
+<update id="do_update_qnastep" parameterType="int" >
+
+UPDATE QNA
+SET 
+QNA_STEP ='Y'
+WHERE QNA_REF = #{QNA_REF}
+</update>
+<!-- 문의 답글  -->
+<insert id="do_insert_qna" parameterType="hashmap">
+INSERT
+INTO QNA
+  (
+    QNA_SEQ,
+    QNA_TITLE,
+    QNA_CONTENT,
+    QNA_TIME,
+    QNA_OPEN,
+    QNA_REF,
+    QNA_TYPE,
+    QNA_STEP,
+    USER_ID,
+    PRO_SEQ
+  )
+  VALUES
+  (
+    QNA_SEQ.NEXTVAL,
+     #{QNA_TITLE},
+     #{QNA_CONTENT},
+   	 SYSDATE,
+     #{QNA_OPEN},
+     QNA_SEQ.CURRVAL,
+     #{QNA_TYPE},
+     'N',
+     #{USER_ID},
+     #{PRO_SEQ}
+  )
+</insert>
+
+<select id="do_select_PRO_SEQ_st" parameterType="hashmap" resultType="com.eagle.men_in_black.model.UserMypageDto">
+<![CDATA[
+SELECT 
+A.DEL_SEQ
+,A.DEL_ADDRESS
+,A.DEL_POSTCODE
+,A.DEL_NUMBER
+,A.DEL_CONTENT
+,A.REC_NAME
+,A.REC_TEL
+,A.DEL_TIME
+,A.DEL_PRICE
+,A.DEL_STEP
+,A.PRO_SEQ PRO_SEQ_st
+,A.USER_ID
+,A.COUPON
+,A.COUP_SEQ
+,A.POINT
+,A.FINAL_PRICE
+,A.REVIEW_SEQ
+FROM DELIVERY A
+WHERE USER_ID=#{USER_ID} AND A.DEL_SEQ = #{DEL_SEQ}
+
+
+]]>
+</select>
+
+
+
+
+<select id="do_select_deldel" parameterType="String" resultType="com.eagle.men_in_black.model.UserMypageDto">
+<![CDATA[
+SELECT *
+FROM
+(SELECT 
+A.DEL_SEQ
+,A.DEL_ADDRESS
+,A.DEL_POSTCODE
+,A.DEL_NUMBER
+,A.DEL_CONTENT
+,A.REC_NAME
+,A.REC_TEL
+,A.DEL_TIME
+,A.DEL_PRICE
+,A.DEL_STEP
+,A.PRO_SEQ PRO_SEQ_st
+,A.USER_ID
+,A.COUPON
+,A.COUP_SEQ
+,A.POINT
+,A.FINAL_PRICE
+FROM DELIVERY A
+WHERE USER_ID=#{USER_ID}
+ORDER BY A.DEL_SEQ DESC
+)
+WHERE ROWNUM <=5
+]]>
+</select>
+
+<select id="do_select_propho" parameterType="int" resultType="com.eagle.men_in_black.model.UserMypageDto">
+<![CDATA[
+SELECT *
+FROM
+(SELECT A.PRO_NAME,B.STORED_NAME 
+FROM PRODUCT A INNER JOIN PHOTO B 
+ON A.PRO_SEQ = B.PRO_SEQ
+WHERE A.PRO_SEQ = #{PRO_SEQ} AND
+B.STORED_NAME LIKE '%MAIN%'
+)
+WHERE ROWNUM <=5
+]]>
+</select>
+
+</mapper>

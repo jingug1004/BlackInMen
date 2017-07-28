@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN" "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+ 
+<tiles-definitions>
+		<!-- Template // main이 우리가 만드는 부분  -->
+		<definition name="layout" template="/WEB-INF/views/layout2.jsp">
+			<put-attribute name="title" value="메인페이지"/>
+			<put-attribute name="top" value="/WEB-INF/views/layout/top.jsp"/>
+			<put-attribute name="header" value="/WEB-INF/views/layout/header2.jsp"/>
+			<put-attribute name="left" value="/WEB-INF/views/layout/left.jsp"/>
+			<put-attribute name="main" />
+			<put-attribute name="right" value="/WEB-INF/views/layout/right.jsp"/>
+			<put-attribute name="footer" value="/WEB-INF/views/layout/footer.jsp"/>
+		</definition>
+		<!-- //Template -->
+
+		<!-- Template extends// layout전체가 들어감 -->
+		
+		<definition name="*/*" extends="layout" >
+			<put-attribute name="main" value="/WEB-INF/views/{1}/{2}.jsp"/>
+		</definition>
+		
+      <!-- 마이페이지 부분  -->
+      <!-- Template // main이 우리가 만드는 부분  -->
+		<definition name="mypagelayout" template="/WEB-INF/views/layout2.jsp">
+			<put-attribute name="title" value="메인페이지"/>
+			<put-attribute name="top" value="/WEB-INF/views/layout/top.jsp"/>
+			<put-attribute name="header" value="/WEB-INF/views/layout/header2.jsp"/>
+			<put-attribute name="left" value="/WEB-INF/views/layout/MypageLeft2.jsp"/>
+			<put-attribute name="main" />
+			<put-attribute name="right" value="/WEB-INF/views/layout/right.jsp"/>
+			<put-attribute name="footer" value="/WEB-INF/views/layout/footer.jsp"/>
+		</definition>
+		<!-- //Template -->
+
+		<!-- Template extends// layout전체가 들어감 -->
+		<definition name="*/*/*" extends="mypagelayout" >
+			<put-attribute name="main" value="/WEB-INF/views/{1}/{2}/{3}.jsp"/>	
+		</definition>
+		
+		
+      <definition name="no-tiles" template="WEB-INF/views/noTemplate.jsp">
+         <put-attribute name="noTemplate" value="" />
+      </definition>
+
+
+
+
+      <!-- 구매버튼 타일즈 -->
+      <!-- Template // main이 우리가 만드는 부분  -->
+		<definition name="Detaillayout" template="/WEB-INF/views/layout2.jsp">
+			<put-attribute name="title" value="메인페이지"/>
+			<put-attribute name="top" value="/WEB-INF/views/layout/top.jsp"/>
+			<put-attribute name="header" value="/WEB-INF/views/layout/header2.jsp"/>
+			<put-attribute name="left" value="/WEB-INF/views/layout/left.jsp"/>
+			<put-attribute name="main" />
+			<put-attribute name="right" value="/WEB-INF/views/layout/DetailRight.jsp"/>
+			<put-attribute name="footer" value="/WEB-INF/views/layout/footer.jsp"/>
+		</definition>
+		<!-- //Template -->
+
+		<!-- Template extends// layout전체가 들어감 -->
+		<definition name="*/*/*/*" extends="Detaillayout" >
+			<put-attribute name="main" value="/WEB-INF/views/{1}/{2}/{3}/{4}.jsp"/>	
+		</definition>
+		
+</tiles-definitions>

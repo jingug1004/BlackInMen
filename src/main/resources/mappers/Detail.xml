@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eagle.repository.mapper.Detail">
+
+<select id="do_selectProductDetail" parameterType="int" resultType="com.eagle.men_in_black.model.DetailDto">
+SELECT A.PHOTO_SEQ
+	, A.STORED_NAME
+	, B.PRO_SEQ
+	, B.BODYTYPE
+	, B.PRO_NAME
+	, B.PRO_CONTENT
+	, B.PRO_DETAIL
+	, B.WASH
+	, B.MATERIAL
+	, B.PRO_PRICE
+	, B.BODYTYPE
+	, (SELECT ROUND(AVG(SCORE))
+		FROM REVIEW
+		WHERE PRO_SEQ=#{PRO_SEQ}
+		AND NOT SCORE IS NULL
+		) AS AVG_SCORE
+FROM PHOTO A INNER JOIN PRODUCT B
+ON A.PRO_SEQ = B.PRO_SEQ
+WHERE B.PRO_SEQ=#{PRO_SEQ}
+</select>
+
+<select id="do_selectProductColor" parameterType="int" resultType="com.eagle.men_in_black.model.DetailDto">
+SELECT DISTINCT COLOR
+FROM PRO_DETAIL
+WHERE PRO_SEQ=#{PRO_SEQ}
+</select>
+
+<select id="do_selectProductSize" parameterType="int" resultType="com.eagle.men_in_black.model.DetailDto">
+SELECT DISTINCT PRO_SIZE
+FROM PRO_DETAIL
+WHERE PRO_SEQ=#{PRO_SEQ}
+</select>
+
+<select id="do_buyProductPop" parameterType="int" resultType="com.eagle.men_in_black.model.DetailDto">
+SELECT A.PRO_SEQ
+		, A.PRO_NAME
+		, A.PRO_CONTENT
+		,B.COLOR
+		,B.PRO_SIZE
+		,B.STOCK 
+FROM PRODUCT A INNER JOIN PRO_DETAIL B
+ON A.PRO_SEQ = B.PRO_SEQ
+WHERE A.PRO_SEQ=#{PRO_SEQ}
+</select>
+
+<select id="do_buyProductColorPop" parameterType="int" resultType="com.eagle.men_in_black.model.DetailDto">
+SELECT DISTINCT B.COLOR 
+FROM PRODUCT A INNER JOIN PRO_DETAIL B
+ON A.PRO_SEQ = B.PRO_SEQ
+WHERE A.PRO_SEQ=#{PRO_SEQ}
+</select>
+
+<select id="do_buyProductSizePop" parameterType="hashmap" resultType="com.eagle.men_in_black.model.DetailDto">
+SELECT DISTINCT PRO_SIZE, STOCK
+FROM PRO_DETAIL
+WHERE PRO_SEQ=#{PRO_SEQ} AND COLOR=#{COLOR}
+</select>
+
+<select id="do_buyProductStockPop" parameterType="hashmap" resultType="String">
+SELECT DISTINCT STOCK
+FROM PRO_DETAIL
+WHERE PRO_SEQ=#{PRO_SEQ} AND COLOR=#{COLOR} AND PRO_SIZE=#{PRO_SIZE}
+</select>
+
+<insert id="do_addBasket" parameterType="hashmap">
+INSERT INTO BASKET (BAS_SEQ, PRO_SEQ, USER_ID, PRO_SIZE, COLOR, BAS_PRO_NUM)
+VALUES(BAS_SEQ.NEXTVAL,#{PRO_SEQ},#{USER_ID},#{PRO_SIZE},#{COLOR},#{BAS_PRO_NUM})
+</insert>
+
+<select id="do_selectProductReviewList" parameterType="hashmap" resultType="com.eagle.men_in_black.model.DetailDto">
+SELECT TT1.*
+FROM (
+	SELECT ROWNUM RNUM,T1.*,T2.*
+	FROM(
+
+		SELECT A.REV_SEQ	
+			, A.USER_ID	
+			, A.REV_TIME	
+			, A.REV_TITLE	
+			, A.SCORE
+		    , (SELECT ROUND(AVG(SCORE))
+		  		FROM REVIEW
+		  		WHERE PRO_SEQ=#{PRO_SEQ}
+				) AS AVG_SCORE
+			, B.STORED_NAME
+FROM REVIEW A LEFT JOIN PHOTO B
+ON A.REV_SEQ = B.REV_SEQ
+WHERE A.PRO_SEQ=#{PRO_SEQ}
+ORDER BY A.REV_REF DESC, A.REV_SEQ ASC
+    
+	) T1 
+	NATURAL JOIN(
+
+		SELECT COUNT(*) TOT_CNT
+		FROM(
+			SELECT COUNT(A.REV_SEQ)
+			FROM  REVIEW A LEFT JOIN PHOTO B 
+			ON A.REV_SEQ=B.REV_SEQ 
+			WHERE A.PRO_SEQ=#{PRO_SEQ}                 
+			GROUP BY A.REV_SEQ
+		) 
+
+	) T2
+) TT1
+WHERE RNUM BETWEEN (#{PAGE_SIZE} * (#{PAGE_NUM}-1)+1) and ((#{PAGE_SIZE}*(#{PAGE_NUM}-1))+#{PAGE_SIZE})
+</select>
+
+<select id="do_selectReviewDetail" parameterType="int" resultType="com.eagle.men_in_black.model.DetailDto">
+SELECT 
+	REV_SEQ,
+	REV_TITLE,
+	REV_CONTENT,
+	REV_TIME,
+	NVL(SCORE,0) SCORE,
+	REV_REF,
+	USER_ID,
+	PRO_SEQ,
+	REV_STEP,
+NVL((select PHOTO.STORED_NAME from PHOTO where rev_seq=#{REV_SEQ}), 'none') STORED_NAME
+FROM REVIEW 
+WHERE REV_SEQ=#{REV_SEQ}
+</select>
+
+<update id="do_updateReviewFlag" parameterType="int">
+UPDATE REVIEW
+SET REV_STEP = 'Y'
+WHERE REV_SEQ   = #{REV_REF}
+</update>
+
+<insert id="do_insertReviewAdmReply" parameterType="hashmap">
+INSERT INTO REVIEW (REV_SEQ, REV_TIME, REV_TITLE, REV_CONTENT, SCORE, REV_REF, USER_ID, PRO_SEQ, REV_STEP)
+VALUES(REV_SEQ.NEXTVAL, SYSDATE, #{REV_TITLE}, #{REV_CONTENT}, NULL, #{REV_REF}, #{USER_ID}, #{PRO_SEQ}, NULL)
+</insert>
+
+<select id="do_selectProductQnAList" parameterType="hashmap" resultType="com.eagle.men_in_black.model.DetailDto">
+SELECT TT1.*
+FROM (
+	SELECT ROWNUM RNUM,T1.*,T2.*
+	FROM(
+
+SELECT QNA_SEQ,QNA_OPEN,QNA_TYPE,QNA_TITLE,QNA_REF,USER_ID,QNA_TIME
+FROM QNA
+WHERE PRO_SEQ=#{PRO_SEQ}
+ORDER BY QNA_REF DESC, QNA_SEQ ASC
+    
+	) T1 
+	NATURAL JOIN(
+
+		SELECT COUNT(*) TOT_CNT
+		FROM(
+			SELECT COUNT(QNA_SEQ)
+			FROM  QNA
+			WHERE PRO_SEQ=#{PRO_SEQ}                 
+			GROUP BY QNA_SEQ
+		) 
+
+	) T2
+) TT1
+WHERE RNUM BETWEEN (#{PAGE_SIZE} * (#{PAGE_NUM}-1)+1) and ((#{PAGE_SIZE}*(#{PAGE_NUM}-1))+#{PAGE_SIZE})
+</select>
+
+<select id="do_selectFinalBuy" parameterType="hashmap" resultType="com.eagle.men_in_black.model.DetailDto">
+SELECT A.PRO_SEQ
+	, A.BAS_SEQ
+	, B.PRO_NAME
+	, B.PRO_PRICE
+	, A.PRO_SIZE
+	, A.COLOR
+	, C.STORED_NAME
+	, A.BAS_PRO_NUM
+FROM BASKET A INNER JOIN PRODUCT B
+ON A.PRO_SEQ = B.PRO_SEQ
+INNER JOIN PHOTO C
+ON A.PRO_SEQ = C.PRO_SEQ 
+WHERE C.STORED_NAME LIKE '%MAIN%' AND
+A.USER_ID = #{USER_ID} AND A.BAS_SEQ IN 
+	<foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+		#{item.value}
+	</foreach>
+ORDER BY A.BAS_SEQ DESC
+</select>
+
+<select id="do_selectCouponList" parameterType="hashmap" resultType="com.eagle.men_in_black.model.DetailDto" >
+<![CDATA[  
+SELECT COUP_SEQ
+	, COUP_NAME
+	, COUP_PRICE
+	, CONDITION
+	, COUP_TIME
+	, COUP_LIMIT
+	, COUP_USE
+	, USER_ID
+FROM COUPON 
+WHERE USER_ID=#{USER_ID} AND COUP_LIMIT>SYSDATE AND CONDITION<#{FINAL_PRICE} AND COUP_USE='가능'
+]]>
+</select>
+
+<select id="do_selectPointsList" parameterType="String" resultType="int" > 
+SELECT * 
+FROM (SELECT POINT_FINAL FROM POINTS
+    WHERE USER_ID = #{USER_ID}
+    ORDER BY POINT_SEQ DESC)
+WHERE ROWNUM =1
+</select>
+
+<insert id="do_insertBuyDel" parameterType="hashmap">
+INSERT INTO DELIVERY
+(
+    DEL_SEQ
+    , DEL_ADDRESS
+    , DEL_POSTCODE
+    , DEL_NUMBER
+    , DEL_CONTENT
+    , REC_NAME
+    , REC_TEL
+    , DEL_TIME
+    , DEL_PRICE
+    , DEL_STEP
+    , PRO_SEQ
+    , USER_ID
+    , RETURN
+    , RE_OPTION
+    , RE_REASON
+    , CA_ACCOUNT
+    , DEL_DETAIL_ADDRESS
+    ,COUPON
+	,POINT
+	,COUP_SEQ
+	,FINAL_PRICE
+	,REVIEW_SEQ
+)
+VALUES
+(
+DEL_SEQ.NEXTVAL,
+#{DEL_ADDRESS},
+#{DEL_POSTCODE},
+0,
+NULL,
+#{REC_NAME},
+#{REC_TEL},
+SYSDATE,
+#{DEL_PRICE},
+'상품준비',
+#{PRO_SEQ},
+#{USER_ID},
+NULL,
+NULL,
+NULL,
+NULL,
+#{DEL_DETAIL_ADDRESS},
+#{COUPON},
+#{POINT},
+#{COUP_SEQ},
+#{FINAL_PRICE},
+#{PRO_SEQ})  
+</insert>
+
+<select id="do_selectBasketInfo" parameterType="int" resultType="com.eagle.men_in_black.model.DetailDto" > 
+SELECT BAS_SEQ, PRO_SEQ, USER_ID, PRO_SIZE, COLOR, BAS_PRO_NUM
+FROM BASKET
+WHERE BAS_SEQ=#{BAS_SEQ}
+</select>
+
+<insert id="do_insertBuySales" parameterType="hashmap">
+INSERT INTO SALES
+(
+  SEL_SEQ
+  , SEL_TIME
+  , PRO_SEQ
+  , USER_ID
+  , DEL_SEQ
+  , SEL_SIZE
+  , SEL_COLOR
+  , SEL_NUM
+  , CANCLE
+)
+VALUES
+(SEL_SEQ.NEXTVAL,SYSDATE,#{PRO_SEQ},#{USER_ID},#{DEL_SEQ},#{SEL_SIZE},#{SEL_COLOR},#{SEL_NUM},NULL)
+</insert>
+
+<select id="do_selectBuyDEL_SEQ"  resultType="int" > 
+select max(del_seq) from DELIVERY
+</select>
+
+<update id="do_updateBuyCouponState" parameterType="int">
+UPDATE COUPON
+SET COUP_USE = '불가능'
+WHERE COUP_SEQ=#{COUP_SEQ}
+</update>
+
+<insert id="do_insertBuyPoint" parameterType="hashmap">
+INSERT INTO POINTS(
+	POINT_SEQ,
+	POINT_TIME,
+	POINT_PRICE,
+	POINT_FINAL,
+	INCREASE,
+	USER_ID,
+	PRO_SEQ,
+	DEL_SEQ,
+	POINT_REASON
+	)
+	
+	
+VALUES(
+	POINT_SEQ.NEXTVAL,
+	SYSDATE,
+	#{POINT_PRICE},((
+  		SELECT POINT_FINAL
+  		FROM(
+  			SELECT POINT_FINAL
+  			FROM POINTS
+  			WHERE USER_ID = #{USER_ID}
+  			ORDER BY POINT_SEQ DESC)
+  		WHERE ROWNUM =1
+  	)-(#{POINT_PRICE})),
+       		'MINUS',
+       		#{USER_ID},
+       		0,
+       		#{DEL_SEQ},
+       		'사용'
+       		)
+</insert>
+
+<delete id="do_deleteBuyBasket" parameterType="int">
+DELETE FROM BASKET
+WHERE BAS_SEQ=#{BAS_SEQ}
+</delete>
+
+</mapper>

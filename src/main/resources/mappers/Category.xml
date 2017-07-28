@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eagle.repository.mapper.Category">
+	
+	<sql id="BaseCondition">
+         <choose>
+             <when test="SUB_ITEM != 'ALL'">
+              AND A.SUB_ITEM = #{SUB_ITEM}
+             </when>
+             <otherwise>
+             </otherwise>        	    
+         </choose>
+      </sql>
+	
+<select id="do_selectCategoryProductList" parameterType="hashmap" resultType="com.eagle.men_in_black.model.CategoryDto">
+SELECT TT1.*
+FROM (
+	SELECT ROWNUM RNUM,T1.*,T2.*
+	FROM(
+
+		SELECT C.SALE_CNT,C.PRO_NAME
+			, C.PRO_CONTENT
+			, C.PRO_SEQ
+			, C.PRO_PRICE
+			, C.ITEM
+			, D.STORED_NAME
+			, COUNT(E.PRO_SEQ) AS REVIEW_CNT
+		FROM (
+			SELECT COUNT(B.PRO_SEQ) AS SALE_CNT
+				, A.PRO_NAME
+				, A.PRO_CONTENT
+				, A.PRO_SEQ
+				, A.PRO_PRICE
+				, A.ITEM
+			FROM PRODUCT A LEFT JOIN SALES B 
+			ON A.PRO_SEQ=B.PRO_SEQ 
+			WHERE A.ITEM= #{ITEM} 
+			<include refid="BaseCondition"/>                 
+			GROUP BY B.PRO_SEQ
+				,A.PRO_NAME
+				,A.PRO_CONTENT
+				,A.PRO_SEQ
+				,A.PRO_PRICE
+				,A.ITEM
+		)C LEFT JOIN PHOTO D ON C.PRO_SEQ = D.PRO_SEQ
+		LEFT JOIN REVIEW E ON C.PRO_SEQ = E.PRO_SEQ
+		WHERE D.STORED_NAME LIKE '%MAIN%'            
+		GROUP BY C.SALE_CNT
+			, C.PRO_NAME
+			, C.PRO_CONTENT
+			, C.PRO_SEQ
+			, C.PRO_PRICE
+			, C.ITEM
+			, D.STORED_NAME
+			, E.PRO_SEQ
+		ORDER BY ${ORDER}                    
+  
+	) T1 
+	NATURAL JOIN(
+
+		SELECT COUNT(*) TOT_CNT
+		FROM(
+			SELECT COUNT(A.PRO_SEQ)
+			FROM  PRODUCT A LEFT JOIN SALES B 
+			ON A.PRO_SEQ=B.PRO_SEQ 
+			WHERE A.ITEM= #{ITEM} 
+			<include refid="BaseCondition"/>                     
+			GROUP BY A.PRO_SEQ
+		) 
+		
+	) T2
+) TT1
+WHERE RNUM BETWEEN (#{PAGE_SIZE} * (#{PAGE_NUM}-1)+1) and ((#{PAGE_SIZE}*(#{PAGE_NUM}-1))+#{PAGE_SIZE})
+</select>
+
+<select id="do_selectCategoryProductBestList" parameterType="String" resultType="com.eagle.men_in_black.model.CategoryDto">
+<![CDATA[  
+SELECT * FROM
+(SELECT AA.SALE_CNT,BB.STORED_NAME,AA.PRO_NAME,AA.PRO_CONTENT,AA.PRO_SEQ,AA.PRO_PRICE  
+FROM (SELECT COUNT(A.PRO_SEQ) SALE_CNT, B.PRO_NAME, B.PRO_CONTENT, B.PRO_SEQ, B.PRO_PRICE  
+FROM  SALES A INNER JOIN PRODUCT B 
+ON A.PRO_SEQ=B.PRO_SEQ 
+WHERE B.ITEM=#{ITEM}    
+GROUP BY A.PRO_SEQ,B.PRO_NAME,B.PRO_CONTENT,B.PRO_SEQ,B.PRO_PRICE 
+ORDER BY SALE_CNT DESC) AA LEFT OUTER JOIN PHOTO BB
+ON AA.PRO_SEQ=BB.PRO_SEQ
+WHERE BB.STORED_NAME LIKE '%MAIN%'
+ORDER BY SALE_CNT DESC)
+WHERE ROWNUM <=3
+]]> 
+</select>
+
+<select id="do_selectSub_itemList" parameterType="String" resultType="com.eagle.men_in_black.model.CategoryDto">
+SELECT SUB_ITEM
+FROM PRODUCT
+WHERE ITEM=#{ITEM}
+GROUP BY SUB_ITEM
+</select>
+
+<select id="do_selectNewProductList" parameterType="hashmap" resultType="com.eagle.men_in_black.model.CategoryDto">
+SELECT TT1.*
+FROM (
+	SELECT ROWNUM RNUM,T1.*,T2.*
+	FROM(
+
+		SELECT C.SALE_CNT
+			,C.PRO_NAME
+			, C.PRO_CONTENT
+			, C.PRO_SEQ
+			, C.PRO_PRICE
+			, C.ITEM
+			, D.STORED_NAME
+			, C.NEW_ITEM
+			, COUNT(E.PRO_SEQ) AS REVIEW_CNT
+		FROM (
+			SELECT COUNT(B.PRO_SEQ) AS SALE_CNT
+					, A.PRO_NAME
+					, A.PRO_CONTENT
+					, A.PRO_SEQ
+					, A.PRO_PRICE
+					, A.ITEM
+					, A.NEW_ITEM
+			FROM PRODUCT A LEFT JOIN SALES B 
+			ON A.PRO_SEQ=B.PRO_SEQ 
+			WHERE A.NEW_ITEM = 'Y'                
+			GROUP BY B.PRO_SEQ
+					,A.PRO_NAME
+					,A.PRO_CONTENT
+					,A.PRO_SEQ
+					,A.PRO_PRICE
+					,A.ITEM
+					,A.NEW_ITEM
+		)C LEFT JOIN PHOTO D ON C.PRO_SEQ = D.PRO_SEQ
+		LEFT JOIN REVIEW E ON C.PRO_SEQ = E.PRO_SEQ
+		WHERE D.STORED_NAME LIKE '%MAIN%'
+		GROUP BY C.SALE_CNT
+				, C.PRO_NAME
+				, C.PRO_CONTENT
+				, C.PRO_SEQ
+				, C.PRO_PRICE
+				, C.ITEM
+				, D.STORED_NAME
+				, C.NEW_ITEM
+				, E.PRO_SEQ
+		ORDER BY ${ORDER}
+  
+	) T1 
+	NATURAL JOIN(
+
+		SELECT COUNT(*) TOT_CNT
+		FROM(
+			SELECT COUNT(A.PRO_SEQ)
+			FROM  PRODUCT A LEFT JOIN SALES B 
+			ON A.PRO_SEQ=B.PRO_SEQ 
+			WHERE A.NEW_ITEM = 'Y'                     
+			GROUP BY A.PRO_SEQ
+		) 
+
+	) T2
+) TT1
+WHERE RNUM BETWEEN (#{PAGE_SIZE} * (#{PAGE_NUM}-1)+1) and ((#{PAGE_SIZE}*(#{PAGE_NUM}-1))+#{PAGE_SIZE})
+</select>
+
+</mapper>

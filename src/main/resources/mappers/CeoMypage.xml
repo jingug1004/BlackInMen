@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.eagle.repository.mapper.CeoMypage">
+
+
+<select id="do_ceomypage_main" parameterType="hashmap" resultType="com.eagle.men_in_black.model.CeoMypageDto" >
+SELECT TT1.*
+  FROM (
+       SELECT ROWNUM RNUM,T1.*,T2.*
+      
+            FROM(
+                SELECT 
+                PRO_SEQ PRO_SEQ_st,
+                USER_ID,
+                COUPON, 
+                POINT, 
+                FINAL_PRICE, 
+                DEL_TIME, 
+                DEL_STEP,
+                DEL_SEQ
+                FROM DELIVERY 
+                WHERE USER_ID LIKE #{search}
+                AND DEL_TIME BETWEEN TO_DATE(${START_DATE}, 'YYYY-MM-DD') 
+                AND TO_DATE(${END_DATE}, 'YYYY-MM-DD')
+                ORDER BY DEL_SEQ DESC
+              ) T1
+ NATURAL JOIN
+  	(
+     SELECT COUNT(*) TOT_CNT
+     FROM DELIVERY
+     where USER_ID like #{search}
+                AND DEL_TIME BETWEEN TO_DATE(${START_DATE}, 'YYYY-MM-DD') 
+                AND TO_DATE(${END_DATE}, 'YYYY-MM-DD')
+    ) T2
+  	) TT1
+  	WHERE RNUM BETWEEN (#{PAGE_SIZE} * (#{PAGE_NUM}-1)+1) and ((#{PAGE_SIZE}*(#{PAGE_NUM}-1))+#{PAGE_SIZE})
+</select>
+
+
+<select id="do_search_review" parameterType="hashmap" resultType="com.eagle.men_in_black.model.CeoMypageDto">
+SELECT TT1.*
+  FROM (
+       SELECT ROWNUM RNUM,T1.*,T2.*
+       FROM(
+
+SELECT A.REV_SEQ,B.PRO_NAME,A.REV_TITLE,A.REV_TIME,A.SCORE,B.ITEM
+FROM REVIEW A INNER JOIN PRODUCT B
+ON A.PRO_SEQ = B.PRO_SEQ 
+WHERE A.REV_STEP = 'N' AND 
+B.ITEM=#{ITEM}
+ORDER BY REV_SEQ DESC
+) T1
+NATURAL JOIN
+(
+	SELECT COUNT(*) TOT_CNT
+	FROM REVIEW A INNER JOIN PRODUCT B
+	ON A.PRO_SEQ = B.PRO_SEQ 
+	WHERE A.REV_STEP = 'N' AND 
+	B.ITEM=#{ITEM} 
+) T2
+  	) TT1
+WHERE RNUM BETWEEN (#{PAGE_SIZE} * (#{PAGE_NUM}-1)+1) and ((#{PAGE_SIZE}*(#{PAGE_NUM}-1))+#{PAGE_SIZE})
+</select>
+
+<select id="do_search_QnA" parameterType="hashmap" resultType="com.eagle.men_in_black.model.CeoMypageDto">
+SELECT TT1.*
+  FROM (
+       SELECT ROWNUM RNUM,T1.*,T2.*
+       FROM(
+
+SELECT A.QNA_SEQ,B.PRO_NAME,A.QNA_TITLE,A.QNA_TIME,B.ITEM,A.QNA_TYPE
+FROM QNA A INNER JOIN PRODUCT B
+ON A.PRO_SEQ = B.PRO_SEQ 
+WHERE A.QNA_STEP = 'N' AND 
+B.ITEM=#{ITEM}
+ORDER BY QNA_SEQ DESC
+) T1
+NATURAL JOIN
+(
+	SELECT COUNT(*) TOT_CNT
+	FROM QNA A INNER JOIN PRODUCT B
+	ON A.PRO_SEQ = B.PRO_SEQ 
+	WHERE A.QNA_STEP = 'N' AND 
+	B.ITEM=#{ITEM}
+) T2
+  	) TT1
+WHERE RNUM BETWEEN (#{PAGE_SIZE} * (#{PAGE_NUM}-1)+1) and ((#{PAGE_SIZE}*(#{PAGE_NUM}-1))+#{PAGE_SIZE})
+</select>
+
+<select id="do_search_delstep" parameterType="int" resultType="String">
+SELECT DEL_STEP FROM DELIVERY WHERE DEL_SEQ = #{SEQ}
+</select>
+
+<update id="do_update_delstep" parameterType="hashmap" >
+UPDATE DELIVERY SET DEL_STEP=#{delstep} 
+WHERE DEL_SEQ = #{del_seq}
+</update>
+
+<insert id="do_insert_product" parameterType="hashmap">
+INSERT
+INTO PRODUCT
+  (
+    PRO_SEQ,
+    PRO_DETAIL,
+    PRO_NAME,
+    ITEM,
+    SUB_ITEM,
+    PRO_PRICE,
+    MATERIAL,
+    WASH,
+    BODYTYPE,
+    PRO_CONTENT,
+    NEW_ITEM
+  )
+  VALUES
+  (
+    PRO_SEQ.NEXTVAL,
+    #{pro_detail},
+    #{pro_name},
+    #{item},
+    #{sub_item},
+    #{pro_price},
+  	#{material},
+    #{wash},
+    #{bodytype},
+    #{pro_content},
+   	#{new_item}
+  )
+</insert>
+
+<insert id="do_insert_product_detail" parameterType="com.eagle.men_in_black.model.CeoMypageDto">
+INSERT INTO PRO_DETAIL
+  (
+    DET_SEQ,
+    PRO_SEQ,
+    PRO_SIZE,
+    COLOR,
+    STOCK
+  )
+  VALUES
+  (
+    DET_SEQ.NEXTVAL,
+   #{PRO_SEQ},
+   #{SIZE},
+   #{COLOR},
+   #{STOCK}
+  )
+</insert>
+
+<insert id="do_insert_product_photo" parameterType="java.util.HashMap">
+  INSERT
+INTO PHOTO
+  (
+    PHOTO_SEQ,
+    STORED_NAME,
+    ORIGINAL_NAME,
+    PRO_SEQ
+  )
+  VALUES
+  (
+    PHOTO_SEQ.NEXTVAL,
+    #{STORED_FILE_NAME},
+    #{ORIGINAL_FILE_NAME},
+    PRO_SEQ.CURRVAL
+    )
+</insert>
+
+<select id="do_select_proseq" resultType="int">
+  SELECT MAX(PRO_SEQ) FROM PRODUCT
+</select>
+
+<select id="do_search_subitem" parameterType="String" resultType="String">
+select DISTINCT SUB_ITEM from PRODUCT where ITEM=#{item} ORDER BY SUB_ITEM
+</select>
+
+<select id="do_select_mainbanner" parameterType="hashmap" resultType="com.eagle.men_in_black.model.CeoMypageDto">
+SELECT TT1.*
+  FROM (
+       SELECT ROWNUM RNUM,T1.*,T2.*
+       FROM(
+select  A.PRO_SEQ,
+        A.PRO_NAME,
+        A.ITEM,
+        A.SUB_ITEM,
+        A.PRO_PRICE,
+        A.PRO_CONTENT,
+        B.STORED_NAME
+from PRODUCT A INNER JOIN PHOTO B
+ON A.PRO_SEQ=B.PRO_SEQ
+where A.NEW_ITEM='Y' and B.STORED_NAME like '%MAIN%'
+) T1
+NATURAL JOIN
+(
+     SELECT COUNT(*) TOT_CNT
+     FROM PRODUCT A INNER JOIN PHOTO B
+     ON A.PRO_SEQ = B.PRO_SEQ
+     where NEW_ITEM='Y' AND B.STORED_NAME like '%MAIN%'
+) T2
+) TT1
+WHERE RNUM BETWEEN (#{PAGE_SIZE} * (#{PAGE_NUM}-1)+1) and ((#{PAGE_SIZE}*(#{PAGE_NUM}-1))+#{PAGE_SIZE})
+</select>
+
+<select id="do_select_mainbanpt" parameterType="hashmap" resultType="com.eagle.men_in_black.model.CeoMypageDto">
+SELECT  a.PRO_SEQ,
+        a.PRO_NAME,
+        a.ITEM,
+        a.SUB_ITEM,
+        a.PRO_PRICE,
+        a.PRO_CONTENT,
+        b.STORED_NAME
+FROM PRODUCT a inner join PHOTO b
+on a.PRO_SEQ = b.PRO_SEQ
+WHERE NEW_ITEM='Y'
+and b.STORED_NAME like '%MAIN%'
+AND a.PRO_SEQ = ANY
+<foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+   #{item.value}
+</foreach>
+
+</select>
+
+<insert id="do_insert_mainbanner" parameterType="com.eagle.men_in_black.model.CeoMypageDto">
+INSERT INTO MAINBANNER
+  (BAN_SEQ, 
+   PRO_SEQ, 
+   BAN_TIME
+  ) VALUES
+  (BAN_SEQ.NEXTVAL,
+  #{PRO_SEQ},
+  SYSDATE
+  )
+</insert>
+
+<select id="do_select_banseq" parameterType="hashmap" resultType="Integer">
+SELECT MAX(BAN_SEQ) FROM MAINBANNER WHERE PRO_SEQ = #{proseq}
+</select>
+
+<insert id="do_insert_banpt" parameterType="hashmap">
+INSERT
+INTO PHOTO
+  (
+    PHOTO_SEQ,
+    STORED_NAME,
+    ORIGINAL_NAME,
+    BAN_SEQ
+  )
+  VALUES
+  (
+    PHOTO_SEQ.NEXTVAL,
+    #{STORED_FILE_NAME},
+    #{ORIGINAL_FILE_NAME},
+    #{BAN_SEQ}
+  )
+</insert>
+
+<update id="do_update_admre" parameterType="com.eagle.men_in_black.model.CeoMypageDto">
+UPDATE REVIEW
+SET  REV_TITLE   = #{REV_TITLE},
+     REV_CONTENT = #{REV_CONTENT},
+     REV_TIME    = SYSDATE
+WHERE REV_SEQ   = #{REV_SEQ}
+</update>
+
+<select id="do_select_cancle" parameterType="int" resultType="com.eagle.men_in_black.model.CeoMypageDto">
+SELECT 
+COUP_SEQ,
+POINT,
+USER_ID,
+RETURN,
+RE_OPTION,
+RE_REASON,
+CA_ACCOUNT,
+DEL_DETAIL_ADDRESS,
+DEL_SEQ 
+FROM DELIVERY
+where DEL_SEQ=#{DEL_SEQ}
+</select>
+
+<select id="do_select_prophoceo" parameterType="int" resultType="com.eagle.men_in_black.model.CeoMypageDto">
+SELECT A.PRO_NAME,B.STORED_NAME 
+FROM PRODUCT A INNER JOIN PHOTO B 
+ON A.PRO_SEQ = B.PRO_SEQ
+WHERE A.PRO_SEQ = #{PRO_SEQ} AND
+B.STORED_NAME LIKE '%MAIN%'
+</select>
+
+<select id="do_select_maindetail" parameterType="hashmap" resultType="com.eagle.men_in_black.model.CeoMypageDto">
+select a.pro_seq,a.user_id,a.SEL_NUM, a.SEL_COLOR, a.SEL_SIZE, b.ITEM, b.PRO_NAME, c.STOCK, d.STORED_NAME,e.POINT,e.COUPON,e.FINAL_PRICE,b.PRO_PRICE, e.REVIEW_SEQ
+from SALES a inner join PRODUCT b
+on a.PRO_SEQ = b.PRO_SEQ
+inner join PRO_DETAIL c
+on a.PRO_SEQ = c.PRO_SEQ and a.SEL_SIZE=c.PRO_SIZE and a.SEL_COLOR=c.COLOR
+inner join PHOTO d
+on a.PRO_SEQ = d.PRO_SEQ
+inner join DELIVERY e
+on a.DEL_SEQ = e.DEL_SEQ
+where d.STORED_NAME like '%MAIN%'
+and a.PRO_SEQ = #{PRO_SEQ}
+and a.DEL_SEQ = #{DEL_SEQ}
+</select>
+
+<insert id="do_insert_canclepoint" parameterType="hashmap">
+INSERT
+INTO POINTS
+  (
+    POINT_SEQ,
+    POINT_TIME,
+    POINT_PRICE,
+    POINT_FINAL,
+    INCREASE,
+    USER_ID,
+    PRO_SEQ,
+    DEL_SEQ,
+    POINT_REASON
+  )
+  VALUES
+  (
+    POINT_SEQ.NEXTVAL,
+    
+    SYSDATE,
+    
+    #{POINT},
+    
+    ((SELECT POINT_FINAL 
+                FROM 
+                    (SELECT POINT_FINAL
+                     FROM POINTS
+                      WHERE USER_ID =#{USER_ID}
+                      ORDER BY POINT_SEQ DESC
+                      )
+                WHERE ROWNUM =1)+#{POINT}),
+                
+    'PLUS',
+    
+    #{USER_ID},
+    
+    0,
+    
+    #{DEL_SEQ},
+    '환불지급'
+    
+  )
+</insert>
+
+<update id="do_update_canclecoup" parameterType="int">
+UPDATE COUPON
+SET COUP_USE = '가능'  
+WHERE COUP_SEQ = #{COUP_SEQ}
+</update>
+
+</mapper>
