@@ -2,7 +2,7 @@
 <!DOCTYPE mapper
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.sist.repository.mapper.CodeM">
+<mapper namespace="com.sistt.repository.mapper.CodeM">
 
      <select id="sqlTest" resultType="java.lang.String">
      	select '8888 Hello Spring' as msg from dual
